@@ -1,1 +1,282 @@
-<p>Hello world</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synapse | Society Merit & Skill Management</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <i class="fa-solid fa-network-wired"></i> Synapse
+            </a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#societies">Societies</a></li>
+                <li><a href="#leaderboard">Leaderboard</a></li>
+            </ul>
+            <div class="nav-auth">
+                <a href="#login" class="btn btn-outline">Log In</a>
+                <a href="#signup" class="btn btn-primary">Sign Up</a>
+            </div>
+            
+            <!-- Mobile Menu Toggle -->
+            <div class="menu-toggle" id="mobile-menu">
+                <i class="fa-solid fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-bg-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+        </div>
+        <div class="hero-content">
+            <span class="badge">Milestone 2 Launch <i class="fa-solid fa-rocket"></i></span>
+            <h1>Connect. Contribute. <span class="gradient-text">Level Up.</span></h1>
+            <p>The ultimate platform for college societies. Showcase your skills, earn merit points through active participation, and build a verifiable portfolio before you even graduate.</p>
+            <div class="hero-buttons">
+                <a href="#societies" class="btn btn-primary btn-lg">Explore Societies</a>
+                <a href="#leaderboard" class="btn btn-secondary btn-lg">View Leaderboard</a>
+            </div>
+            
+            <div class="hero-stats">
+                <div class="stat">
+                    <h3>12+</h3>
+                    <p>Active Societies</p>
+                </div>
+                <div class="stat">
+                    <h3>1,200+</h3>
+                    <p>Merit Points Earned</p>
+                </div>
+                <div class="stat">
+                    <h3>450+</h3>
+                    <p>Verified Skills</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Societies Section -->
+    <section class="societies" id="societies">
+        <div class="section-header">
+            <h2>Campus <span class="gradient-text">Societies</span></h2>
+            <p>Join a community, participate in events, and earn verifiable merit points.</p>
+        </div>
+        
+        <div class="society-grid">
+            <!-- Society Card 1 -->
+            <div class="society-card">
+                <div class="society-icon tech">
+                    <i class="fa-solid fa-code"></i>
+                </div>
+                <h3>Coding Club</h3>
+                <p>Learn algorithms, participate in hackathons, and build real-world software.</p>
+                <div class="society-footer">
+                    <span class="members"><i class="fa-solid fa-users"></i> 142 Members</span>
+                    <a href="#" class="view-link">View <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <!-- Society Card 2 -->
+            <div class="society-card">
+                <div class="society-icon robotics">
+                    <i class="fa-solid fa-robot"></i>
+                </div>
+                <h3>Robotics Society</h3>
+                <p>Design, build, and program autonomous robots for national competitions.</p>
+                <div class="society-footer">
+                    <span class="members"><i class="fa-solid fa-users"></i> 85 Members</span>
+                    <a href="#" class="view-link">View <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <!-- Society Card 3 -->
+            <div class="society-card">
+                <div class="society-icon debate">
+                    <i class="fa-solid fa-microphone"></i>
+                </div>
+                <h3>Debate Society</h3>
+                <p>Sharpen your public speaking, critical thinking, and argumentation skills.</p>
+                <div class="society-footer">
+                    <span class="members"><i class="fa-solid fa-users"></i> 110 Members</span>
+                    <a href="#" class="view-link">View <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            </div>
+            
+            <!-- Society Card 4 -->
+            <div class="society-card">
+                <div class="society-icon design">
+                    <i class="fa-solid fa-pen-nib"></i>
+                </div>
+                <h3>Design & UI/UX</h3>
+                <p>Create stunning interfaces, master Figma, and learn user-centric design.</p>
+                <div class="society-footer">
+                    <span class="members"><i class="fa-solid fa-users"></i> 95 Members</span>
+                    <a href="#" class="view-link">View <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Leaderboard / Skills Section -->
+    <section class="leaderboard" id="leaderboard">
+        <div class="section-header">
+            <h2>Skill <span class="gradient-text">Leaderboard</span></h2>
+            <p>Top students ranked by society participation and verified skills.</p>
+        </div>
+
+        <!-- Filter Buttons -->
+        <div class="filter-container">
+            <button class="filter-btn active" data-filter="all">All Skills</button>
+            <button class="filter-btn" data-filter="web">Web Dev</button>
+            <button class="filter-btn" data-filter="ai">AI / ML</button>
+            <button class="filter-btn" data-filter="design">Design</button>
+        </div>
+
+        <div class="leaderboard-grid" id="student-grid">
+            <!-- Student Card 1 -->
+            <div class="student-card" data-skill="web">
+                <div class="rank badge-gold">#1</div>
+                <div class="student-info">
+                    <img src="https://ui-avatars.com/api/?name=Alex+Chen&background=0D8ABC&color=fff" alt="Alex Chen" class="avatar">
+                    <div class="details">
+                        <h4>Alex Chen</h4>
+                        <p>Computer Science, 3rd Year</p>
+                    </div>
+                </div>
+                <div class="student-skills">
+                    <span class="skill-tag">React</span>
+                    <span class="skill-tag">Node.js</span>
+                    <span class="skill-tag">MongoDB</span>
+                </div>
+                <div class="merit-score">
+                    <div class="score-ring">
+                        <span>4,250</span>
+                    </div>
+                    <p>Merit Points</p>
+                </div>
+            </div>
+
+            <!-- Student Card 2 -->
+            <div class="student-card" data-skill="ai">
+                <div class="rank badge-silver">#2</div>
+                <div class="student-info">
+                    <img src="https://ui-avatars.com/api/?name=Sarah+Jenkins&background=7A28CB&color=fff" alt="Sarah Jenkins" class="avatar">
+                    <div class="details">
+                        <h4>Sarah Jenkins</h4>
+                        <p>Data Science, 4th Year</p>
+                    </div>
+                </div>
+                <div class="student-skills">
+                    <span class="skill-tag">Python</span>
+                    <span class="skill-tag">PyTorch</span>
+                    <span class="skill-tag">Data Analysis</span>
+                </div>
+                <div class="merit-score">
+                    <div class="score-ring">
+                        <span>3,890</span>
+                    </div>
+                    <p>Merit Points</p>
+                </div>
+            </div>
+
+            <!-- Student Card 3 -->
+            <div class="student-card" data-skill="design">
+                <div class="rank badge-bronze">#3</div>
+                <div class="student-info">
+                    <img src="https://ui-avatars.com/api/?name=Marcus+Doe&background=E55934&color=fff" alt="Marcus Doe" class="avatar">
+                    <div class="details">
+                        <h4>Marcus Doe</h4>
+                        <p>Interaction Design, 2nd Year</p>
+                    </div>
+                </div>
+                <div class="student-skills">
+                    <span class="skill-tag">Figma</span>
+                    <span class="skill-tag">UI/UX</span>
+                    <span class="skill-tag">CSS</span>
+                </div>
+                <div class="merit-score">
+                    <div class="score-ring">
+                        <span>3,120</span>
+                    </div>
+                    <p>Merit Points</p>
+                </div>
+            </div>
+            
+            <!-- Student Card 4 -->
+            <div class="student-card" data-skill="web">
+                <div class="rank">#4</div>
+                <div class="student-info">
+                    <img src="https://ui-avatars.com/api/?name=Priya+Patel&background=FDB833&color=fff" alt="Priya Patel" class="avatar">
+                    <div class="details">
+                        <h4>Priya Patel</h4>
+                        <p>Information Tech, 3rd Year</p>
+                    </div>
+                </div>
+                <div class="student-skills">
+                    <span class="skill-tag">Vue.js</span>
+                    <span class="skill-tag">PostgreSQL</span>
+                    <span class="skill-tag">Docker</span>
+                </div>
+                <div class="merit-score">
+                    <div class="score-ring">
+                        <span>2,950</span>
+                    </div>
+                    <p>Merit Points</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <a href="#" class="logo">
+                    <i class="fa-solid fa-network-wired"></i> Synapse
+                </a>
+                <p>Empowering students to build skills, earn merit, and connect with campus societies.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="#societies">Browse Societies</a></li>
+                    <li><a href="#leaderboard">Leaderboard</a></li>
+                    <li><a href="#">Verify Skills</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">For Society Heads</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Synapse Project. Milestone 2 Submission.</p>
+        </div>
+    </footer>
+
+    <!-- Custom JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
