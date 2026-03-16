@@ -1,145 +1,164 @@
-#include "DataStructures.h"
-#include "Models.h"
 #include <iostream>
 #include <string>
-
+#include <fstream>
+#include <sstream>
+#include <vector> // Added for --get-events to reverse order
+#include "Models.h"
+#include "DataStructures.h"
 
 using namespace std;
 
-// Initialize our core Data Structures
-StudentDirectory directory;  // Hash Table
-SkillIndex skills;           // BST
-LeaderboardHeap leaderboard; // Max Heap
-EventHistory historyStack;   // Stack
+// Initialize Core Data Structures
+StudentDirectory directory;
+SkillIndex skills;
+LeaderboardHeap leaderboard;
+EventHistory historyStack;
 
-void displayMenu() {
-  cout << "\n=============================================" << endl;
-  cout << "     SYNAPSE SOCIETY MANAGEMENT SYSTEM       " << endl;
-  cout << "=============================================" << endl;
-  cout << "1. Create Student Profile (Hash + BST)" << endl;
-  cout << "2. View Student Profile (Hash Table O(1))" << endl;
-  cout << "3. Find Students by Skill (BST O(log N))" << endl;
-  cout << "4. Log Society Event (Stack Push)" << endl;
-  cout << "5. Undo Last Event (Stack Pop)" << endl;
-  cout << "6. Add Merit Points & View Leaderboard (Max Heap)" << endl;
-  cout << "7. Exit" << endl;
-  cout << "=============================================" << endl;
-  cout << "Select an option: ";
+// Helper: Trim whitespace (if needed) and basic JSON escape
+string escapeJSON(const string& s) {
+    string result;
+    for (char c : s) {
+        if (c == '"') result += "\\\"";
+        else result += c;
+    }
+    return result;
 }
 
-int main() {
-  int choice;
-
-  // Seed some initial data to demonstrate polymorphism
-  Admin admin("A001", "Professor Smith", "smith@college.edu",
-              "Computer Science Dept");
-  cout << "\n[SYSTEM STARTED BY ADMIN]" << endl;
-  User *currentUser = &admin; // Polymorphism: User pointer holding Admin object
-  currentUser->displayProfile(); // Calls Admin's displayProfile()
-
-  while (true) {
-    displayMenu();
-    if (!(cin >> choice)) {
-      cout << "Invalid input. Exiting..." << endl;
-      break;
-    }
-
-    switch (choice) {
-    case 1: {
-      string id, name, email, skill;
-      cout << "Enter Student ID (e.g., S101): ";
-      cin >> id;
-      cout << "Enter Name: ";
-      cin.ignore();
-      getline(cin, name);
-      cout << "Enter Email: ";
-      cin >> email;
-      cout << "Enter Primary Skill (e.g., C++, React, Design): ";
-      cin >> skill;
-
-      // OOP: Instantiating Student object
-      Student *newStudent = new Student(id, name, email, skill);
-
-      // DS: Insert into Hash Table and BST
-      directory.insert(newStudent);
-      skills.indexStudent(newStudent);
-
-      cout << "\n[SUCCESS] Student " << name
-           << " added to Directory and Skill Index." << endl;
-      break;
-    }
-    case 2: {
-      string searchId;
-      cout << "Enter Student ID to lookup: ";
-      cin >> searchId;
-
-      // DS: O(1) Lookup via Hash Table
-      Student *found = directory.getStudent(searchId);
-      if (found) {
-        cout << "\n[FOUND via HASH TABLE O(1)]" << endl;
-        found->displayProfile(); // OOP: Polymorphism in action
-      } else {
-        cout << "\n[ERROR] Student ID not found in Hash Table." << endl;
-      }
-      break;
-    }
-    case 3: {
-      string targetSkill;
-      cout << "Enter skill to search for: ";
-      cin >> targetSkill;
-
-      // DS: O(log N) Lookup via BST
-      skills.findStudentsBySkill(targetSkill);
-      break;
-    }
-    case 4: {
-      string eventDesc;
-      cout << "Describe event: ";
-      cin.ignore();
-      getline(cin, eventDesc);
-
-      // DS: Push to Stack
-      historyStack.logEvent(eventDesc);
-      break;
-    }
-    case 5: {
-      // DS: Pop from Stack
-      historyStack.undoLastEvent();
-      historyStack.viewLatest();
-      break;
-    }
-    case 6: {
-      string sid;
-      int points;
-      cout << "Enter Student ID to award points: ";
-      cin >> sid;
-      Student *s = directory.getStudent(sid);
-
-      if (s) {
-        cout << "Enter points to award: ";
-        cin >> points;
-        // OOP: Encapsulation (using setter)
+// ---------------------------------------------------------
+// DATA PERSISTENCE: Load from Files
+// ---------------------------------------------------------
+void loadDatabase() {
+    // Load Students
+    ifstream sfile("students.txt");
+    string line, id, name, email, skill;
+    int points;
+    
+    while (getline(sfile, line)) {
+        if (line.empty()) continue;
+        stringstream ss(line);
+        getline(ss, id, '|');
+        getline(ss, name, '|');
+        getline(ss, email, '|');
+        getline(ss, skill, '|');
+        ss >> points;
+        
+        Student* s = new Student(id, name, email, skill);
         s->addMeritPoints(points);
-
-        // DS: Insert into Max Heap
+        
+        directory.insert(s);
+        skills.indexStudent(s);
         leaderboard.insertOrUpdate(s);
-        cout << "\n[SUCCESS] Awarded " << points << " points to "
-             << s->getName() << endl;
-
-        // Display updated Heap
-        leaderboard.displayLeaderboard(3);
-      } else {
-        cout << "\n[ERROR] Student ID not found." << endl;
-      }
-      break;
     }
-    case 7:
-      cout << "Shutting down system..." << endl;
-      return 0;
-    default:
-      cout << "Invalid choice. Try again." << endl;
-    }
-  }
+    sfile.close();
 
-  return 0;
+    // Load Events
+    ifstream efile("events.txt");
+    while (getline(efile, line)) {
+        if (!line.empty()) historyStack.logEvent(line);
+    }
+    efile.close();
+}
+
+void saveStudent(string id, string name, string email, string skill, int points) {
+    ofstream sfile("students.txt", ios::app);
+    sfile << id << "|" << name << "|" << email << "|" << skill << "|" << points << "\n";
+    sfile.close();
+}
+
+void saveEvent(string desc) {
+    ofstream efile("events.txt", ios::app);
+    efile << desc << "\n";
+    efile.close();
+}
+
+// ---------------------------------------------------------
+// MAIN CLI API (Output MUST be valid JSON)
+// ---------------------------------------------------------
+int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        cout << "{\"error\": \"No arguments provided\"}" << endl;
+        return 1;
+    }
+
+    // Always load data first to populate Hash Table, BST, etc.
+    // Suppress cout from internal logic by redirecting rdbuf temporarily
+    streambuf* orig_cout = cout.rdbuf();
+    stringstream dummy;
+    cout.rdbuf(dummy.rdbuf());
+    
+    loadDatabase();
+    
+    // Restore cout for JSON output
+    cout.rdbuf(orig_cout);
+
+    string command = argv[1];
+
+    if (command == "--add-student" && argc >= 6) {
+        string id = argv[2];
+        string name = argv[3];
+        string email = argv[4];
+        string skill = argv[5];
+        
+        // Ensure not duplicate in our Directory (Hash Table)
+        if (directory.getStudent(id) != nullptr) {
+            cout << "{\"status\": \"error\", \"message\": \"Student ID already exists\"}" << endl;
+            return 1;
+        }
+
+        saveStudent(id, name, email, skill, 0); // initial 0 points
+        cout << "{\"status\": \"success\", \"message\": \"Student added\"}" << endl;
+    }
+    else if (command == "--get-students") {
+        // Read directly from file for JSON simplicity, or iterate Hash Table
+        // For simplicity, we just read the file and format as JSON array
+        ifstream sfile("students.txt");
+        string line;
+        cout << "[";
+        bool first = true;
+        while (getline(sfile, line)) {
+            if (line.empty()) continue;
+            stringstream ss(line);
+            string id, name, email, skill, pStr;
+            getline(ss, id, '|');
+            getline(ss, name, '|');
+            getline(ss, email, '|');
+            getline(ss, skill, '|');
+            getline(ss, pStr);
+            
+            if (!first) cout << ",";
+            cout << "{\"id\": \"" << escapeJSON(id) << "\", \"name\": \"" << escapeJSON(name) 
+                 << "\", \"skill\": \"" << escapeJSON(skill) << "\", \"points\": " << pStr << "}";
+            first = false;
+        }
+        cout << "]" << endl;
+    }
+    else if (command == "--add-event" && argc >= 3) {
+        string desc = argv[2];
+        saveEvent(desc);
+        cout << "{\"status\": \"success\", \"message\": \"Event added\"}" << endl;
+    }
+    else if (command == "--get-events") {
+        ifstream efile("events.txt");
+        string line;
+        cout << "[";
+        bool first = true;
+        
+        // Reverse order so newest is first (simulating Stack Pop order)
+        vector<string> events;
+        while (getline(efile, line)) {
+            if (!line.empty()) events.push_back(line);
+        }
+        for (int i = events.size() - 1; i >= 0; i--) {
+            if (!first) cout << ",";
+            cout << "{\"desc\": \"" << escapeJSON(events[i]) << "\"}";
+            first = false;
+        }
+        cout << "]" << endl;
+    }
+    else {
+        cout << "{\"error\": \"Invalid command format\"}" << endl;
+        return 1;
+    }
+
+    return 0;
 }

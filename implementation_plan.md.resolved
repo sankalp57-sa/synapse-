@@ -1,0 +1,81 @@
+# Plan for Synapse M2 (College Society Merit & Skill Platform)
+
+This plan outlines the steps to build a premium, frontend-only version of the Synapse platform for the upcoming college milestone submission. The focus is on a high-fidelity design using HTML, CSS (Vanilla, with modern variables and flexbox/grid), and lightweight JavaScript for interactivity.
+
+## Proposed Changes
+
+### Core Frontend Files
+I will replace the existing, simple [index.html](file:///e:/college%20esources/micro%20project/synapse/synapse-/index.html) with a fully fleshed-out web application structure.
+
+#### [NEW] [index.html](file:///e:/college%20esources/micro%20project/synapse/synapse-/index.html)
+- Contains the semantic HTML structure.
+- **Sections:**
+  - `header`: Navigation (Logo, Home, Societies, Leaderboard, Login).
+  - `hero`: A striking introductory section explaining Synapse.
+  - `societies`: A grid displaying active college societies.
+  - `leaderboard`/`skills`: A section showcasing top students, their skills, and merit points.
+  - `footer`: Basic links and copyright.
+
+#### [NEW] [style.css](file:///e:/college%20esources/micro%20project/synapse/synapse-/style.css)
+- Contains all styling.
+- **Aesthetic:** Dark mode by default, utilizing deep purples/blues, glassmorphism (translucent backgrounds with blur), modern sans-serif typography (e.g., Google Fonts 'Inter' or 'Outfit'), and smooth CSS transitions on hover.
+
+#### [NEW] [script.js](file:///e:/college%20esources/micro%20project/synapse/synapse-/script.js)
+- Adds interactivity.
+- **Features:** 
+  - Dynamic filtering of the student leaderboard (e.g., clicking "Web Dev" shows only students with that skill).
+  - Simple animations (e.g., navbar background changing on scroll).
+
+---
+
+## C++ Backend Implementation (Milestone 2 Requirements)
+
+To impress the professors for Milestone 2, we will implement a robust C++ command-line application that acts as the "Manager" for the Synapse platform. This application will heavily utilize Object-Oriented Programming (OOP) paradigms specifically combined with Custom Data Structures.
+
+### 1. Object-Oriented Programming (OOP) Architecture
+
+#### Abstraction & Encapsulation
+- Variables within classes (e.g., a student's `meritPoints`, or the internal `head` of a linked list) will be private.
+- Public getter/setter methods will abstract the internal state changes.
+
+#### Inheritance
+- We will have a base `User` class containing generic data (`name`, `id`, `email`).
+- A `Student` class will **inherit** from `User`, adding specific fields like `skills`, `societiesJoined`, and `meritPoints`.
+- A `SocietyHead` class (or Admin) will also **inherit** from `User`, adding privileges like `addEvent()`.
+
+#### Polymorphism
+- A virtual `displayProfile()` method in the base `User` class will be overridden in the `Student` and `SocietyHead` subclasses to print output specific to that role.
+
+### 2. Core Data Structures Integration
+
+#### A. Hash Map with separate chaining (Linked List)
+- **Use Case:** Storing and retrieving `Student` objects instantly.
+- **Implementation:** An array of custom `LinkedList` objects. The Key will be the Student ID (using a basic hash function `id % table_size`), granting $O(1)$ average lookups for logins or profile views.
+
+#### B. Binary Search Tree (BST)
+- **Use Case:** Indexing students by their `Merit Points` for easy range queries (e.g., "Find all students with points > 500").
+- **Implementation:** A `MeritNode` containing points and a pointer to the student. In-order traversal naturally prints the leaderboard in sorted format.
+
+#### C. Max Heap
+- **Use Case:** Maintaining an always-accurate Leaderboard top 3.
+- **Implementation:** A dynamic array representing a complete binary tree. As students gain merit points, we call `heapifyUp()` to automatically reposition them.
+
+#### D. Stack (LIFO)
+- **Use Case:** A "Recent Activity History" for a specific society.
+- **Implementation:** Custom linked-list based Stack. Pushing new events (e.g., "Hackathon created", "Meeting scheduled") and allowing a "Pop" operation to act as an Undo.
+
+### File Structure (Example)
+- [main.cpp](file:///e:/college%20esources/micro%20project/synapse/synapse-/main.cpp): The CLI menu loop handling user input.
+- `Models.h`: Contains the OOP hierarchy (`User`, `Student`, `SocietyHead`).
+- `DataStructures.h`: Contains our custom templates/classes for `HashTable`, `LinkedList`, `BST`, `MaxHeap`, and `Stack`.
+
+## Verification Plan
+
+### Automated Tests
+*   Compile using `g++ -o synapse_backend main.cpp`.
+*   Ensure no compilation errors and clean execution.
+
+### Manual Verification
+*   Run the generated executable.
+*   Interact with the CLI to confirm instances of inheritance and polymorphism work correctly during object creation and method calls.
+*   Test that the Data Structures integrate seamlessly with the OOP Models (e.g., inserting a polymorphic `User*` pointer into the Hash Table).
