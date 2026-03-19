@@ -240,6 +240,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Load custom clubs from local storage (to simulate a persistent database for presentation)
+    const storedClubs = JSON.parse(localStorage.getItem('custom_clubs') || '[]');
+    const societyGrid = document.querySelector('.society-grid');
+    
+    storedClubs.forEach(customClub => {
+        // Add to data dictionary
+        societyData[customClub.name] = customClub.data;
+        
+        // Generate and Inject the Card HTML into the grid
+        const newCard = document.createElement('div');
+        newCard.className = 'society-card';
+        newCard.style.cursor = 'pointer';
+        newCard.innerHTML = `
+            <div class="society-icon ${customClub.data.iconClass}">
+                ${customClub.data.iconHTML}
+            </div>
+            <h3>${customClub.name}</h3>
+            <p>${customClub.data.focus}</p>
+            <div class="society-footer">
+                <span class="members"><i class="fa-solid fa-users"></i> ${customClub.data.members}</span>
+                <a href="#" class="view-link" onclick="event.preventDefault()">View &rarr;</a>
+            </div>
+        `;
+        // Insert right after the built-in cards
+        if (societyGrid) {
+            societyGrid.appendChild(newCard);
+        }
+    });
+
     const modal = document.getElementById('society-modal');
     const closeBtn = document.getElementById('modal-close-btn');
 

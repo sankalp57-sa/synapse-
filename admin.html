@@ -210,10 +210,34 @@
             } catch(err) { alert('Failed to connect to backend.'); }
         });
 
-        // Submit Club (Simulated for Presentation)
+        // Submit Club (Simulated for Presentation but functionally injects to UI via localStorage)
         document.getElementById('club-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            // Since the C++ backend does not handle full club models yet, simulate success for the UI presentation
+            
+            const name = document.getElementById('club-name').value;
+            const president = document.getElementById('club-president').value;
+            const focus = document.getElementById('club-focus').value;
+            
+            // Build society object
+            const newClub = {
+                name: name,
+                data: {
+                    iconClass: 'tech', // Default icon style
+                    iconHTML: '<i class="fa-solid fa-users-rectangle"></i>',
+                    members: '1 Member', // Starter
+                    president: president,
+                    faculty: 'Prof. TBD',
+                    rank: '#New',
+                    focus: focus,
+                    events: ['Inauguration Ceremony (Pending)']
+                }
+            };
+            
+            // Save to localStorage
+            const existingClubs = JSON.parse(localStorage.getItem('custom_clubs') || '[]');
+            existingClubs.push(newClub);
+            localStorage.setItem('custom_clubs', JSON.stringify(existingClubs));
+
             document.getElementById('club-msg').style.display = 'block';
             document.getElementById('club-name').value = '';
             document.getElementById('club-president').value = '';
