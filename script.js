@@ -161,6 +161,135 @@ document.addEventListener('DOMContentLoaded', () => {
     // 7. Load backend data on startup
     loadStudents();
     loadEvents();
+    // 8. Mobile Menu Toggle
+    const mobileMenu = document.getElementById('mobile-menu');
+    const navLinks = document.querySelector('.nav-links');
+    const navAuth = document.querySelector('.nav-auth');
+
+    if (mobileMenu) {
+        mobileMenu.addEventListener('click', () => {
+            const isFlex = navLinks.style.display === 'flex';
+            
+            navLinks.style.display = isFlex ? 'none' : 'flex';
+            navAuth.style.display = isFlex ? 'none' : 'flex';
+            
+            if (!isFlex) {
+                navLinks.style.flexDirection = 'column';
+                navLinks.style.position = 'absolute';
+                navLinks.style.top = '100%';
+                navLinks.style.left = '0';
+                navLinks.style.width = '100%';
+                navLinks.style.background = 'var(--bg-card)';
+                navLinks.style.padding = '1rem';
+                
+                navAuth.style.flexDirection = 'column';
+                navAuth.style.position = 'absolute';
+                navAuth.style.top = 'calc(100% + 150px)';
+                navAuth.style.left = '0';
+                navAuth.style.width = '100%';
+                navAuth.style.background = 'var(--bg-card)';
+                navAuth.style.padding = '1rem';
+            } else {
+                navLinks.style = '';
+                navAuth.style = '';
+            }
+        });
+    }
+
+    // 9. Society Details Modal Logic
+    const societyData = {
+        'Coding Club': {
+            iconClass: 'tech',
+            iconHTML: '<i class="fa-solid fa-code"></i>',
+            members: '142 Members',
+            president: 'Somraj Lodhi',
+            faculty: 'Prof. Ankit Sharma',
+            rank: '#1 in Engineering',
+            focus: 'Web, Apps, Algorithms',
+            events: ['Intro to React Workshop (Mar 20)', 'CodeStorm Hackathon (Apr 5)']
+        },
+        'Robotics Society': {
+            iconClass: 'robotics',
+            iconHTML: '<i class="fa-solid fa-robot"></i>',
+            members: '85 Members',
+            president: 'Aryan Gupta',
+            faculty: 'Dr. Neha Verma',
+            rank: '#3 in Engineering',
+            focus: 'IoT, Drones, Automation',
+            events: ['Line Follower Bot Race (Mar 22)', 'Arduino Basics (Mar 28)']
+        },
+        'Debate Society': {
+            iconClass: 'debate',
+            iconHTML: '<i class="fa-solid fa-microphone"></i>',
+            members: '110 Members',
+            president: 'Priya Patel',
+            faculty: 'Dr. Ramesh Kumar',
+            rank: '#1 in Arts',
+            focus: 'Public Speaking, MUNs',
+            events: ['National Mock Parliament (Mar 25)', 'Weekly debate rounds (Fridays)']
+        },
+        'Design & UI/UX': {
+            iconClass: 'design',
+            iconHTML: '<i class="fa-solid fa-pen-nib"></i>',
+            members: '95 Members',
+            president: 'Alex Chen',
+            faculty: 'Prof. Manish Jain',
+            rank: '#2 in Media',
+            focus: 'Figma, User Research',
+            events: ['UI Design Sprint (Mar 24)', 'Portfolio Review Day (Apr 2)']
+        }
+    };
+
+    const modal = document.getElementById('society-modal');
+    const closeBtn = document.getElementById('modal-close-btn');
+
+    // Attach click listener to all society cards
+    document.querySelectorAll('.society-card').forEach(card => {
+        card.style.cursor = 'pointer'; // Make the whole card clickable visually
+        card.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Get club name from the h3 inside the clicked card
+            const clubName = card.querySelector('h3').innerText;
+            const data = societyData[clubName];
+            
+            if(data) {
+                // Populate modal
+                document.getElementById('modal-club-name').innerText = clubName;
+                document.getElementById('modal-members').innerHTML = `<i class="fa-solid fa-users"></i> ${data.members}`;
+                document.getElementById('modal-president').innerText = data.president;
+                document.getElementById('modal-faculty').innerText = data.faculty;
+                document.getElementById('modal-rank').innerText = data.rank;
+                document.getElementById('modal-focus').innerText = data.focus;
+                
+                const iconContainer = document.getElementById('modal-icon');
+                iconContainer.className = `society-icon ${data.iconClass}`;
+                iconContainer.innerHTML = data.iconHTML;
+                
+                const eventsList = document.getElementById('modal-events-list');
+                eventsList.innerHTML = '';
+                data.events.forEach(ev => {
+                    eventsList.innerHTML += `<li><i class="fa-solid fa-calendar-check"></i> ${ev}</li>`;
+                });
+                
+                // Show modal
+                modal.classList.add('active');
+            }
+        });
+    });
+
+    // Close Modal when X is clicked
+    closeBtn.addEventListener('click', () => {
+        modal.classList.remove('active');
+    });
+
+    // Close Modal when clicking outside the content box
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+        }
+    });
+
 });
 
 // Global Test Functions connecting to API
