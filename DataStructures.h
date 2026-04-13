@@ -228,4 +228,66 @@ public:
   }
 };
 
+// ==========================================
+// DATA STRUCTURE 5: GRAPH (Adjacency List)
+// Student Networking -> O(V + E) BFS/DFS
+// ==========================================
+
+struct EdgeNode {
+  Student* student;
+  EdgeNode* next;
+  EdgeNode(Student* s) : student(s), next(nullptr) {}
+};
+
+class StudentNetwork {
+private:
+  static const int MAX_VERTICES = 100;
+  EdgeNode* adjList[MAX_VERTICES];
+
+  int hashFunction(string id) {
+    int sum = 0;
+    for (char c : id) sum += c;
+    return sum % MAX_VERTICES;
+  }
+
+public:
+  StudentNetwork() {
+    for (int i = 0; i < MAX_VERTICES; i++) {
+        adjList[i] = nullptr;
+    }
+  }
+
+  void addConnection(Student* u, Student* v) {
+      if(!u || !v) return;
+      int uIndex = hashFunction(u->getId());
+      int vIndex = hashFunction(v->getId());
+
+      // Add v to u's list
+      EdgeNode* edge1 = new EdgeNode(v);
+      edge1->next = adjList[uIndex];
+      adjList[uIndex] = edge1;
+
+      // Add u to v's list (undirected graph)
+      EdgeNode* edge2 = new EdgeNode(u);
+      edge2->next = adjList[vIndex];
+      adjList[vIndex] = edge2;
+  }
+
+  void displayNetwork(Student* start) {
+      if(!start) return;
+      int startIndex = hashFunction(start->getId());
+      cout << "\n🌐 --- Student Network for " << start->getName() << " --- 🌐" << endl;
+      
+      EdgeNode* current = adjList[startIndex];
+      if(!current) {
+          cout << start->getName() << " has no connections yet." << endl;
+      }
+      while(current) {
+          cout << " - Connected to: " << current->student->getName() << " (Skill: " << current->student->getSkill() << ")" << endl;
+          current = current->next;
+      }
+      cout << "--------------------------------------\n" << endl;
+  }
+};
+
 #endif // SYNAPSE_DATA_STRUCTURES_H

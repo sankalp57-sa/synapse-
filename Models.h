@@ -27,6 +27,7 @@ public:
     // Getters
     string getId() const { return id; }
     string getName() const { return name; }
+    string getEmail() const { return email; }
     
     // OOP PILLAR: POLYMORPHISM
     // Pure virtual function making this an Abstract class
@@ -43,20 +44,38 @@ class Student : public User {
 private: // Encapsulation: Strict protection of sensitive data
     int meritPoints;
     string primarySkill;
+    int year;
+    float cgpa;
+    int experience;
 
 public:
-    Student(string _id, string _name, string _email, string _skill) 
-        : User(_id, _name, _email), primarySkill(_skill), meritPoints(0) {}
+    Student(string _id, string _name, string _email, string _skill, int _year = 1, float _cgpa = 0.0f, int _exp = 0) 
+        : User(_id, _name, _email), primarySkill(_skill), year(_year), cgpa(_cgpa), experience(_exp), meritPoints(0) {
+            calculateInitialMerit();
+        }
+
+    void calculateInitialMerit() {
+        if (year == 1) {
+            meritPoints = experience * 10;
+        } else {
+            meritPoints = (cgpa * 10) + (experience * 5);
+        }
+    }
 
     // Setters & Getters
     void addMeritPoints(int points) { meritPoints += points; }
+    void setMeritPoints(int points) { meritPoints = points; }
     int getMeritPoints() const { return meritPoints; }
     string getSkill() const { return primarySkill; }
+    int getYear() const { return year; }
+    float getCgpa() const { return cgpa; }
+    int getExperience() const { return experience; }
 
     // Polymorphism Override
     void displayProfile() const override {
         cout << "--- STUDENT PROFILE ---" << endl;
         cout << "ID: " << id << " | Name: " << name << endl;
+        cout << "Year: " << year << " | CGPA: " << cgpa << " | Exp: " << experience << endl;
         cout << "Skill: " << primarySkill << " | Merit Points: " << meritPoints << endl;
         cout << "-----------------------" << endl;
     }
