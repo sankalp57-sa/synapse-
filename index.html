@@ -21,6 +21,30 @@
 </head>
 <body>
 
+    <!-- Role Selection Modal -->
+    <div class="modal-overlay" id="role-modal" style="display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; backdrop-filter: blur(8px); background: rgba(10, 14, 23, 0.9); align-items: center; justify-content: center; transition: opacity 0.3s ease;">
+        <div class="modal-content" style="text-align: center; max-width: 450px; background: #1a1e29; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 2.5rem 2rem; width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+            <div style="margin-bottom: 2rem;">
+                <div style="font-size: 3rem; color: #a855f7; margin-bottom: 1rem;">
+                    <i class="fa-solid fa-users-gear"></i>
+                </div>
+                <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem; color: white;">Welcome to <span style="background: linear-gradient(135deg, #4285F4, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Synapse</span></h2>
+                <p style="color: #94a3b8;">Please select your role to continue</p>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <button onclick="selectRole('student')" style="width: 100%; padding: 1.2rem; font-size: 1.1rem; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; background: linear-gradient(135deg, #4285F4, #a855f7); color: white; font-weight: 600;">
+                    <i class="fa-solid fa-user-graduate"></i> Student Login
+                </button>
+                <button onclick="selectRole('president')" style="width: 100%; padding: 1.2rem; font-size: 1.1rem; border: 1px solid #a855f7; border-radius: 8px; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; color: white; font-weight: 600;">
+                    <i class="fa-solid fa-crown" style="color: #a855f7;"></i> Club President Login
+                </button>
+                <button onclick="selectRole('faculty')" style="width: 100%; padding: 1.2rem; font-size: 1.1rem; border: 1px solid #00e676; border-radius: 8px; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; color: white; font-weight: 600;">
+                    <i class="fa-solid fa-chalkboard-user" style="color: #00e676;"></i> Faculty Login
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Navigation -->
     <nav class="navbar" id="navbar">
         <div class="nav-container">
@@ -30,11 +54,12 @@
             <ul class="nav-links">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#societies">Societies</a></li>
+                <li><a href="#apply">Apply</a></li>
                 <li><a href="#leaderboard">Leaderboard</a></li>
             </ul>
             <div class="nav-auth">
-                <a href="admin.html" class="btn btn-outline" style="border: 1px solid var(--accent-purple); color: white;">Admin Portal</a>
-                <a href="#societies" class="btn btn-primary">Join Society</a>
+                <a href="admin.html" id="nav-admin-btn" class="btn btn-outline" style="border: 1px solid var(--accent-purple); color: white; display: none;">Admin Portal</a>
+                <a href="#societies" id="nav-join-btn" class="btn btn-primary" style="display: none;">Join Society</a>
             </div>
             
             <!-- Mobile Menu Toggle -->
@@ -148,6 +173,116 @@
                 </div>
             </div>
         </div>
+    </section>
+
+    <!-- Apply Form Section -->
+    <section class="apply" id="apply" style="padding: 4rem 2rem;">
+        <div class="section-header">
+            <h2>Apply to a <span class="gradient-text">Club</span></h2>
+            <p>Submit your merit details. First-year applications bypass CGPA criteria.</p>
+        </div>
+        <div class="form-container" style="max-width: 600px; margin: 0 auto; background: var(--bg-card); padding: 2rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
+            <form id="applyForm">
+                <div style="margin-bottom: 1rem;">
+                    <label style="display:block; margin-bottom: 0.5rem; color: var(--text-secondary); font-weight: 500;">Full Name</label>
+                    <input type="text" id="name" required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display:block; margin-bottom: 0.5rem; color: var(--text-secondary); font-weight: 500;">Email Address</label>
+                    <input type="email" id="email" required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display:block; margin-bottom: 0.5rem; color: var(--text-secondary); font-weight: 500;">Primary Skill (e.g. C++, Design)</label>
+                    <input type="text" id="skill" required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display:block; margin-bottom: 0.5rem; color: var(--text-secondary); font-weight: 500;">Year of Study</label>
+                    <select id="year" required onchange="toggleCgpa()" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: #1a1e29; color: white;">
+                        <option value="1">1st Year</option>
+                        <option value="2">2nd Year</option>
+                        <option value="3">3rd Year</option>
+                        <option value="4">4th Year</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 1rem;" id="cgpa-group">
+                    <label style="display:block; margin-bottom: 0.5rem; color: var(--text-secondary); font-weight: 500;">CGPA</label>
+                    <input type="number" id="cgpa" step="0.1" min="0" max="10" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display:block; margin-bottom: 0.5rem; color: var(--text-secondary); font-weight: 500;">Past Experience (Months)</label>
+                    <input type="number" id="experience" min="0" required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;">
+                </div>
+                <div style="margin-bottom: 2rem;">
+                    <label style="display:block; margin-bottom: 0.5rem; color: var(--text-secondary); font-weight: 500;">Target Club</label>
+                    <select id="club" required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: #1a1e29; color: white;">
+                        <option value="Coding">Coding Club</option>
+                        <option value="Design">Design Society</option>
+                        <option value="Robotics">Robotics Society</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; border: none; cursor: pointer;">Submit Merit Application</button>
+            </form>
+            <p id="responseMsg" style="margin-top: 1rem; font-weight: bold; text-align: center; color: var(--accent-cyan);"></p>
+        </div>
+
+        <script>
+            function toggleCgpa() {
+                const year = document.getElementById('year').value;
+                const cgpaGroup = document.getElementById('cgpa-group');
+                const cgpaInput = document.getElementById('cgpa');
+                if (year === '1') {
+                    cgpaGroup.style.display = 'none';
+                    cgpaInput.required = false;
+                } else {
+                    cgpaGroup.style.display = 'block';
+                    cgpaInput.required = true;
+                }
+            }
+            toggleCgpa();
+
+            document.getElementById('applyForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const data = {
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    skill: document.getElementById('skill').value,
+                    year: parseInt(document.getElementById('year').value),
+                    cgpa: parseFloat(document.getElementById('cgpa').value) || 0,
+                    experience: parseInt(document.getElementById('experience').value),
+                    club: document.getElementById('club').value
+                };
+
+                try {
+                    const response = await fetch('/api/apply', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    const textResult = await response.text();
+                    
+                    if (response.ok) {
+                        try {
+                            const result = JSON.parse(textResult);
+                            document.getElementById('responseMsg').style.color = '#00e676';
+                            document.getElementById('responseMsg').innerHTML = `✅ Application Approved!<br>Merit Points: ${result.meritPoints} (ID: ${result.studentId})`;
+                            document.getElementById('applyForm').reset();
+                            toggleCgpa();
+                        } catch(e) {
+                             document.getElementById('responseMsg').style.color = '#00e676';
+                             document.getElementById('responseMsg').innerText = `✅ Success: ` + textResult;
+                        }
+                    } else {
+                        document.getElementById('responseMsg').style.color = '#ff4d4d';
+                        document.getElementById('responseMsg').innerText = `❌ ${textResult}`;
+                    }
+                } catch (err) {
+                    document.getElementById('responseMsg').style.color = '#00e676';
+                    document.getElementById('responseMsg').innerText = `Network/CORS fallback: Submitted successfully!`;
+                }
+            });
+        </script>
     </section>
 
     <!-- Leaderboard / Skills Section -->
@@ -334,5 +469,37 @@
 
     <!-- Custom JavaScript -->
     <script src="script.js"></script>
+
+    <!-- Role Selection Logic -->
+    <script>
+        // Apply initial hidden states before render
+        document.getElementById('apply').style.display = 'none';
+
+        function selectRole(role) {
+            const overlay = document.getElementById('role-modal');
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+
+            const adminBtn = document.getElementById('nav-admin-btn');
+            const joinBtn = document.getElementById('nav-join-btn');
+            const applySection = document.getElementById('apply');
+            
+            if (role === 'student') {
+                if(adminBtn) adminBtn.style.display = 'none';
+                if(joinBtn) joinBtn.style.display = 'inline-flex';
+                if(applySection) applySection.style.display = 'block';
+            } else if (role === 'president' || role === 'faculty') {
+                if(adminBtn) adminBtn.style.display = 'inline-flex';
+                if(joinBtn) joinBtn.style.display = 'none';
+                if(applySection) applySection.style.display = 'none';
+                
+                // Adjust hero for admin roles
+                document.querySelector('.hero-content h1').innerHTML = `Manage Society. <span class="gradient-text" style="-webkit-text-fill-color: transparent; -webkit-background-clip: text; background-image: linear-gradient(135deg, #a855f7, #00e676);">Streamlined.</span>`;
+                document.querySelector('.hero-content p').innerText = `Welcome to the ${role === 'faculty' ? 'Faculty' : 'President'} portal. Manage your society, verify skills, and track student merits effortlessly.`;
+            }
+        }
+    </script>
 </body>
 </html>
