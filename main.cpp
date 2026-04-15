@@ -5,11 +5,14 @@
 #include <vector>
 #include <map>
 #include <thread>
+#include <cstdlib>
 #include "httplib.h"
 #include "Models.h"
 #include "DataStructures.h"
 
 using namespace std;
+
+// ... (rest of global vars) ...
 
 // Initialize Core Data Structures
 StudentDirectory directory;
@@ -138,6 +141,54 @@ void startWebServer() {
         }
     });
 
+    svr.Get("/api/students", [](const httplib::Request& req, httplib::Response& res) {
+        vector<Student*> all = directory.getAllStudents();
+        stringstream json;
+        json << "[";
+        for (size_t i = 0; i < all.size(); ++i) {
+            json << "{\"id\":\"" << all[i]->getId() 
+                 << "\", \"name\":\"" << all[i]->getName() 
+                 << "\", \"skill\":\"" << all[i]->getSkill() 
+                 << "\", \"points\":" << all[i]->getMeritPoints() << "}";
+            if (i < all.size() - 1) json << ",";
+        }
+        json << "]";
+        res.set_content(json.str(), "application/json");
+    });
+
+    svr.Get("/api/events", [](const httplib::Request& req, httplib::Response& res) {
+        vector<string> events = historyStack.getAllEvents();
+        stringstream json;
+        json << "[";
+        for (size_t i = 0; i < events.size(); ++i) {
+            string escaped = events[i];
+            size_t pos = 0;
+            while ((pos = escaped.find("\"", pos)) != string::npos) {
+                escaped.replace(pos, 1, "\\\"");
+                pos += 2;
+            }
+            json << "{\"desc\":\"" << escaped << "\"}";
+            if (i < events.size() - 1) json << ",";
+        }
+        json << "]";
+        res.set_content(json.str(), "application/json");
+    });
+
+    svr.Get(R"(/api/student/(\w+))", [](const httplib::Request& req, httplib::Response& res) {
+        string id = req.matches[1];
+        Student* s = directory.getStudent(id);
+        if (s) {
+            stringstream json;
+            json << "{\"status\":\"success\", \"id\":\"" << s->getId() 
+                 << "\", \"name\":\"" << s->getName() 
+                 << "\", \"points\":" << s->getMeritPoints() << "}";
+            res.set_content(json.str(), "application/json");
+        } else {
+            res.status = 404;
+            res.set_content("{\"status\":\"error\", \"message\":\"Student not found\"}", "application/json");
+        }
+    });
+
     // Helper functions for parsing JSON
     auto extractJsonString = [](string json, string key) {
         size_t pos = json.find("\"" + key + "\":");
@@ -220,7 +271,12 @@ void startWebServer() {
         res.set_content(responseJson, "application/json");
     });
 
-    svr.listen("0.0.0.0", 8080);
+    int port = 8080;
+    char* env_port = std::getenv("PORT");
+    if (env_port) port = std::stoi(env_port);
+
+    std::cout << "🚀 Synapse Backend starting on port " << port << "..." << std::endl;
+    svr.listen("0.0.0.0", port);
 }
 
 int main() {
@@ -233,94 +289,101 @@ int main() {
     
     cout.rdbuf(orig_cout);
 
-    std::thread webThread(startWebServer);
-    webThread.detach();
+    char* env_headless = std::getenv("HEADLESS");
+    bool isHeadless = (env_headless && std::string(env_headless) == "true");
 
-    int choice;
-    do {
-        displayMenu();
-        if (!(cin >> choice)) {
-            if (cin.eof()) {
-                // In a Docker/headless environment, just sleep instead of exiting or looping
-                std::this_thread::sleep_for(std::chrono::hours(24 * 365));
+    if (isHeadless) {
+        std::cout << "🌐 Running in HEADLESS mode (Web Server Only)" << std::endl;
+        startWebServer(); // This is a blocking call, so it keeps the process alive
+    } else {
+        std::thread webThread(startWebServer);
+        webThread.detach();
+
+        int choice;
+        do {
+            displayMenu();
+            if (!(cin >> choice)) {
+                if (cin.eof()) {
+                    std::this_thread::sleep_for(std::chrono::hours(24 * 365));
+                    continue;
+                }
+                cin.clear();
+                cin.ignore(10000, '\n');
                 continue;
             }
-            cin.clear();
-            cin.ignore(10000, '\n');
-            continue;
-        }
 
-        switch (choice) {
-            case 1: {
-                string id, name, email, skill;
-                cout << "Enter Student ID: "; cin >> id;
-                cout << "Enter Name: "; cin.ignore(); getline(cin, name);
-                cout << "Enter Email: "; getline(cin, email);
-                cout << "Enter Primary Skill: "; getline(cin, skill);
-                
-                if (directory.getStudent(id) != nullptr) {
-                    cout << "❌ Error: Student ID already exists!\n";
-                } else {
-                    Student* s = new Student(id, name, email, skill, 1, 0.0, 0); // basic fallback
-                    saveStudent(s);
-                    directory.insert(s);
-                    skills.indexStudent(s);
-                    leaderboard.insertOrUpdate(s);
-                    cout << "✅ Student saved successfully!\n";
+            switch (choice) {
+                case 1: {
+                    string id, name, email, skill;
+                    cout << "Enter Student ID: "; cin >> id;
+                    cout << "Enter Name: "; cin.ignore(); getline(cin, name);
+                    cout << "Enter Email: "; getline(cin, email);
+                    cout << "Enter Primary Skill: "; getline(cin, skill);
+                    
+                    if (directory.getStudent(id) != nullptr) {
+                        cout << "❌ Error: Student ID already exists!\n";
+                    } else {
+                        Student* s = new Student(id, name, email, skill, 1, 0.0, 0); // basic fallback
+                        saveStudent(s);
+                        directory.insert(s);
+                        skills.indexStudent(s);
+                        leaderboard.insertOrUpdate(s);
+                        cout << "✅ Student saved successfully!\n";
+                    }
+                    break;
                 }
-                break;
-            }
-            case 2: {
-                string skill;
-                cout << "Enter Skill to search: "; cin.ignore(); getline(cin, skill);
-                skills.findStudentsBySkill(skill);
-                break;
-            }
-            case 3:
-                leaderboard.displayLeaderboard(5);
-                break;
-            case 4: {
-                string desc;
-                cout << "Enter Event Description: "; cin.ignore(); getline(cin, desc);
-                saveEvent(desc);
-                historyStack.logEvent(desc);
-                break;
-            }
-            case 5:
-                historyStack.undoLastEvent();
-                break;
-            case 6: {
-                string id1, id2;
-                cout << "Enter First Student ID: "; cin >> id1;
-                cout << "Enter Second Student ID: "; cin >> id2;
-                Student* s1 = directory.getStudent(id1);
-                Student* s2 = directory.getStudent(id2);
-                if (s1 && s2) {
-                    networkGraph.addConnection(s1, s2);
-                    cout << "✅ " << s1->getName() << " and " << s2->getName() << " are now connected!\n";
-                } else {
-                    cout << "❌ Invalid Student ID(s).\n";
+                case 2: {
+                    string skill;
+                    cout << "Enter Skill to search: "; cin.ignore(); getline(cin, skill);
+                    skills.findStudentsBySkill(skill);
+                    break;
                 }
-                break;
-            }
-            case 7: {
-                string id;
-                cout << "Enter Student ID to view connections: "; cin >> id;
-                Student* s = directory.getStudent(id);
-                if (s) {
-                    networkGraph.displayNetwork(s);
-                } else {
-                    cout << "❌ Student not found.\n";
+                case 3:
+                    leaderboard.displayLeaderboard(5);
+                    break;
+                case 4: {
+                    string desc;
+                    cout << "Enter Event Description: "; cin.ignore(); getline(cin, desc);
+                    saveEvent(desc);
+                    historyStack.logEvent(desc);
+                    break;
                 }
-                break;
+                case 5:
+                    historyStack.undoLastEvent();
+                    break;
+                case 6: {
+                    string id1, id2;
+                    cout << "Enter First Student ID: "; cin >> id1;
+                    cout << "Enter Second Student ID: "; cin >> id2;
+                    Student* s1 = directory.getStudent(id1);
+                    Student* s2 = directory.getStudent(id2);
+                    if (s1 && s2) {
+                        networkGraph.addConnection(s1, s2);
+                        cout << "✅ " << s1->getName() << " and " << s2->getName() << " are now connected!\n";
+                    } else {
+                        cout << "❌ Invalid Student ID(s).\n";
+                    }
+                    break;
+                }
+                case 7: {
+                    string id;
+                    cout << "Enter Student ID to view connections: "; cin >> id;
+                    Student* s = directory.getStudent(id);
+                    if (s) {
+                        networkGraph.displayNetwork(s);
+                    } else {
+                        cout << "❌ Student not found.\n";
+                    }
+                    break;
+                }
+                case 0:
+                    cout << "Exiting Synapse. Goodbye!\n";
+                    break;
+                default:
+                    cout << "Invalid choice!\n";
             }
-            case 0:
-                cout << "Exiting Synapse. Goodbye!\n";
-                break;
-            default:
-                cout << "Invalid choice!\n";
-        }
-    } while (choice != 0);
+        } while (choice != 0);
+    }
 
     return 0;
 }

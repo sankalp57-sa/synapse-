@@ -1,7 +1,7 @@
 // script.js
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize Socket.io connection for real-time events
-    const socket = io();
+    // Initialize Socket.io connection (Disabled for C++ compatibility)
+    // const socket = io();
 
     // 1. Navbar Scroll Effect
     const navbar = document.getElementById('navbar');
@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 2. Real-Time Event Listener
+    // 2. Real-Time Event Listener (Disabled)
+    /*
     socket.on('new_event', (data) => {
         const container = document.getElementById('live-events-container');
         
@@ -35,9 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const time = new Date().toLocaleTimeString();
         eventEl.innerHTML = `<strong><i class="fa-solid fa-bell"></i> New Event (${time})</strong><br>${data.desc}`;
         
-        // Add to top
         container.prepend(eventEl);
     });
+    */
 
     // 3. Fetch Students from C++ Backend API
     async function loadStudents() {
@@ -311,6 +312,58 @@ document.addEventListener('DOMContentLoaded', () => {
     closeBtn.addEventListener('click', () => {
         modal.classList.remove('active');
     });
+
+    // 10. User Session & Login Logic
+    window.onLoginSuccess = function(user) {
+        localStorage.setItem('synapse_user', JSON.stringify(user));
+        showUser(user);
+    };
+
+    function showUser(user) {
+        const userDisplay = document.getElementById('user-display');
+        const userName = document.getElementById('user-name');
+        if (userDisplay && userName) {
+            userName.innerText = `Welcome, ${user.name}!`;
+            userDisplay.style.display = 'flex';
+        }
+        // Hide the initial role modal if it's still there
+        const roleModal = document.getElementById('role-modal');
+        if (roleModal) {
+            roleModal.style.opacity = '0';
+            setTimeout(() => roleModal.style.display = 'none', 300);
+        }
+    }
+
+    window.loginWithId = async function() {
+        const id = document.getElementById('login-id').value;
+        const error = document.getElementById('login-error');
+        if (!id) return;
+
+        try {
+            const response = await fetch(`/api/student/${id}`);
+            if (response.ok) {
+                const user = await response.json();
+                window.onLoginSuccess({ id: user.id, name: user.name, points: user.points });
+            } else {
+                error.style.display = 'block';
+                error.innerText = "Student ID not found.";
+            }
+        } catch (err) {
+            error.style.display = 'block';
+            error.innerText = "Connection error. Is the server running?";
+        }
+    };
+
+    window.logout = function() {
+        localStorage.removeItem('synapse_user');
+        window.location.reload();
+    };
+
+    // Check for existing session
+    const savedUser = localStorage.getItem('synapse_user');
+    if (savedUser) {
+        showUser(JSON.parse(savedUser));
+    }
 
     // Close Modal when clicking outside the content box
     modal.addEventListener('click', (e) => {

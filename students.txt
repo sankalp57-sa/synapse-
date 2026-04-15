@@ -3,3 +3,6 @@ S104|PRASHANT SHARMA |25am1pr51@mitsgwl.ac.in|html|2|7.8|10|0
 S106|User|test@test.com|python|1|0.0|6|0
 S241|Sankalp Singh|sms14012006@gmail.com|ss|1|0|3|30
 S123|asdf|asd@gmail.com|C++|1|0|0|0
+S241|SOMRAJ LODHI|25am1SO80@mitsgwl.ac.in|c++|1|0|5|50
+S241|sankalp|sms14012006@gmail.com|c++|1|0|5|50
+S241|somraj lodhi|25am1SO@mitsgwl.ac.in|python|1|0|4|40

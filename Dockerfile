@@ -18,5 +18,8 @@ RUN g++ -O3 main.cpp -o synapse_server -pthread
 # Make port 8080 available (as defined in main.cpp svr.listen)
 EXPOSE 8080
 
+# Production settings
+ENV HEADLESS=true
+
 # Run the server
 CMD ["./synapse_server"]

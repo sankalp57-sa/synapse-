@@ -42,6 +42,15 @@
                     <i class="fa-solid fa-chalkboard-user" style="color: #00e676;"></i> Faculty Login
                 </button>
             </div>
+            <div id="student-login-box" style="margin-top: 1.5rem; display: none;">
+                <hr style="opacity: 0.1; margin-bottom: 1.5rem;">
+                <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 1rem;">Already have an account? Enter your ID:</p>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="login-id" placeholder="e.g., S105" style="flex: 1; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;">
+                    <button onclick="loginWithId()" class="btn btn-primary" style="padding: 0.8rem 1.5rem;">Login</button>
+                </div>
+                <p id="login-error" style="color: #ff4d4d; font-size: 0.8rem; margin-top: 5px; display: none;"></p>
+            </div>
         </div>
     </div>
 
@@ -58,6 +67,10 @@
                 <li><a href="#leaderboard">Leaderboard</a></li>
             </ul>
             <div class="nav-auth">
+                <div id="user-display" style="display: none; align-items: center; gap: 10px; margin-right: 1.5rem; color: var(--accent-cyan); font-weight: 600;">
+                    <i class="fa-solid fa-circle-user"></i> <span id="user-name">Welcome!</span>
+                    <button onclick="logout()" style="background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 0.8rem; text-decoration: underline;">Logout</button>
+                </div>
                 <a href="admin.html" id="nav-admin-btn" class="btn btn-outline" style="border: 1px solid var(--accent-purple); color: white; display: none;">Admin Portal</a>
                 <a href="#societies" id="nav-join-btn" class="btn btn-primary" style="display: none;">Join Society</a>
             </div>
@@ -242,6 +255,7 @@
 
             document.getElementById('applyForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
+                const responseMsg = document.getElementById('responseMsg');
                 
                 const data = {
                     name: document.getElementById('name').value,
@@ -256,30 +270,31 @@
                 try {
                     const response = await fetch('/api/apply', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
+                        body: JSON.stringify(data),
+                        headers: { 'Content-Type': 'application/json' }
                     });
                     
-                    const textResult = await response.text();
-                    
                     if (response.ok) {
-                        try {
-                            const result = JSON.parse(textResult);
-                            document.getElementById('responseMsg').style.color = '#00e676';
-                            document.getElementById('responseMsg').innerHTML = `✅ Application Approved!<br>Merit Points: ${result.meritPoints} (ID: ${result.studentId})`;
-                            document.getElementById('applyForm').reset();
-                            toggleCgpa();
-                        } catch(e) {
-                             document.getElementById('responseMsg').style.color = '#00e676';
-                             document.getElementById('responseMsg').innerText = `✅ Success: ` + textResult;
+                        const result = await response.json();
+                        responseMsg.style.color = "var(--accent-cyan)";
+                        responseMsg.innerText = `✅ Application Success! Merit Points: ${result.meritPoints}. Your ID is ${result.studentId}`;
+                        
+                        // New: Save user session
+                        if (window.onLoginSuccess) {
+                            window.onLoginSuccess({ id: result.studentId, name: data.name, points: result.meritPoints });
                         }
+                        
+                        e.target.reset();
+                        toggleCgpa();
                     } else {
-                        document.getElementById('responseMsg').style.color = '#ff4d4d';
-                        document.getElementById('responseMsg').innerText = `❌ ${textResult}`;
+                        const errorText = await response.text();
+                        responseMsg.style.color = '#ff4d4d';
+                        responseMsg.innerText = `❌ ${errorText}`;
                     }
                 } catch (err) {
-                    document.getElementById('responseMsg').style.color = '#ff4d4d';
-                    document.getElementById('responseMsg').innerText = `Error: Could not connect to backend server. Is the backend running?`;
+                    console.error("Submission error:", err);
+                    responseMsg.style.color = '#ff4d4d';
+                    responseMsg.innerText = `Error: Submission failed. Check console for details.`;
                 }
             });
         </script>
@@ -476,15 +491,22 @@
         document.getElementById('apply').style.display = 'none';
 
         function selectRole(role) {
+            const adminBtn = document.getElementById('nav-admin-btn');
+            const joinBtn = document.getElementById('nav-join-btn');
+            const applySection = document.getElementById('apply');
+            const loginBox = document.getElementById('student-login-box');
+            
+            if (role === 'student' && loginBox && loginBox.style.display === 'none') {
+                // Instead of closing, show the login option within the modal
+                loginBox.style.display = 'block';
+                return;
+            }
+
             const overlay = document.getElementById('role-modal');
             overlay.style.opacity = '0';
             setTimeout(() => {
                 overlay.style.display = 'none';
             }, 300);
-
-            const adminBtn = document.getElementById('nav-admin-btn');
-            const joinBtn = document.getElementById('nav-join-btn');
-            const applySection = document.getElementById('apply');
             
             if (role === 'student') {
                 if(adminBtn) adminBtn.style.display = 'none';

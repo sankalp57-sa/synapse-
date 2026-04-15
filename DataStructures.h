@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
+#include <algorithm>
 
 using namespace std;
 
@@ -68,6 +68,19 @@ public:
     }
     return nullptr; // Not found
   }
+
+  // Retrieve all students for leaderboard/JSON
+  vector<Student *> getAllStudents() {
+    vector<Student *> all;
+    for (int i = 0; i < TABLE_SIZE; i++) {
+      HashNode *current = table[i];
+      while (current != nullptr) {
+        all.push_back(current->student);
+        current = current->next;
+      }
+    }
+    return all;
+  }
 };
 
 // ==========================================
@@ -93,7 +106,6 @@ private:
     if (node == nullptr) {
       return new TreeNode(skill, student);
     }
-    // Duplicate skills go right for simplicity in this tree
     if (skill < node->skill) {
       node->left = insertRec(node->left, skill, student);
     } else {
@@ -157,9 +169,6 @@ private:
 
 public:
   void insertOrUpdate(Student *student) {
-    // If updating an existing student, we ideally need to find them and
-    // heapify. For simplicity in this demo, we just add to heap and let
-    // heapifyUp handle positioning.
     heap.push_back(student);
     heapifyUp(heap.size() - 1);
   }
@@ -177,6 +186,15 @@ public:
            << heap[i]->getMeritPoints() << " Points" << endl;
     }
     cout << "---------------------------------\n" << endl;
+  }
+
+  vector<Student*> getTopStudents(int n) {
+      vector<Student*> top = heap;
+      sort(top.begin(), top.end(), [](Student* a, Student* b) {
+          return a->getMeritPoints() > b->getMeritPoints();
+      });
+      if (top.size() > n) top.resize(n);
+      return top;
   }
 };
 
@@ -198,7 +216,6 @@ private:
 public:
   EventHistory() : top(nullptr) {}
 
-  // Push new event onto stack
   void logEvent(string description) {
     EventNode *newNode = new EventNode(description);
     newNode->next = top;
@@ -206,7 +223,6 @@ public:
     cout << "[LOGGED]: " << description << endl;
   }
 
-  // Pop the last event (Undo action)
   void undoLastEvent() {
     if (top == nullptr) {
       cout << "No history to undo." << endl;
@@ -218,13 +234,22 @@ public:
     delete temp;
   }
 
-  // View latest
   void viewLatest() {
     if (top == nullptr) {
       cout << "No recent events." << endl;
       return;
     }
     cout << "[LATEST EVENT]: " << top->eventDescription << endl;
+  }
+
+  vector<string> getAllEvents() {
+    vector<string> all;
+    EventNode *current = top;
+    while (current != nullptr) {
+      all.push_back(current->eventDescription);
+      current = current->next;
+    }
+    return all;
   }
 };
 
@@ -262,12 +287,10 @@ public:
       int uIndex = hashFunction(u->getId());
       int vIndex = hashFunction(v->getId());
 
-      // Add v to u's list
       EdgeNode* edge1 = new EdgeNode(v);
       edge1->next = adjList[uIndex];
       adjList[uIndex] = edge1;
 
-      // Add u to v's list (undirected graph)
       EdgeNode* edge2 = new EdgeNode(u);
       edge2->next = adjList[vIndex];
       adjList[vIndex] = edge2;
