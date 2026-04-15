@@ -283,6 +283,10 @@
                             window.onLoginSuccess({ id: result.studentId, name: data.name, points: result.meritPoints });
                         }
                         
+                        if (window.loadStudents) {
+                            window.loadStudents();
+                        }
+                        
                         e.target.reset();
                         toggleCgpa();
                     } else {
@@ -315,96 +319,8 @@
         </div>
 
         <div class="leaderboard-grid" id="student-grid">
-            <!-- Student Card 1 -->
-            <div class="student-card" data-skill="web">
-                <div class="rank badge-gold">#1</div>
-                <div class="student-info">
-                    <img src="https://ui-avatars.com/api/?name=Alex+Chen&background=0D8ABC&color=fff" alt="Alex Chen" class="avatar">
-                    <div class="details">
-                        <h4>Alex Chen</h4>
-                        <p>Computer Science, 3rd Year</p>
-                    </div>
-                </div>
-                <div class="student-skills">
-                    <span class="skill-tag">React</span>
-                    <span class="skill-tag">Node.js</span>
-                    <span class="skill-tag">MongoDB</span>
-                </div>
-                <div class="merit-score">
-                    <div class="score-ring">
-                        <span>4,250</span>
-                    </div>
-                    <p>Merit Points</p>
-                </div>
-            </div>
-
-            <!-- Student Card 2 -->
-            <div class="student-card" data-skill="ai">
-                <div class="rank badge-silver">#2</div>
-                <div class="student-info">
-                    <img src="https://ui-avatars.com/api/?name=Sarah+Jenkins&background=7A28CB&color=fff" alt="Sarah Jenkins" class="avatar">
-                    <div class="details">
-                        <h4>Sarah Jenkins</h4>
-                        <p>Data Science, 4th Year</p>
-                    </div>
-                </div>
-                <div class="student-skills">
-                    <span class="skill-tag">Python</span>
-                    <span class="skill-tag">PyTorch</span>
-                    <span class="skill-tag">Data Analysis</span>
-                </div>
-                <div class="merit-score">
-                    <div class="score-ring">
-                        <span>3,890</span>
-                    </div>
-                    <p>Merit Points</p>
-                </div>
-            </div>
-
-            <!-- Student Card 3 -->
-            <div class="student-card" data-skill="design">
-                <div class="rank badge-bronze">#3</div>
-                <div class="student-info">
-                    <img src="https://ui-avatars.com/api/?name=Marcus+Doe&background=E55934&color=fff" alt="Marcus Doe" class="avatar">
-                    <div class="details">
-                        <h4>Marcus Doe</h4>
-                        <p>Interaction Design, 2nd Year</p>
-                    </div>
-                </div>
-                <div class="student-skills">
-                    <span class="skill-tag">Figma</span>
-                    <span class="skill-tag">UI/UX</span>
-                    <span class="skill-tag">CSS</span>
-                </div>
-                <div class="merit-score">
-                    <div class="score-ring">
-                        <span>3,120</span>
-                    </div>
-                    <p>Merit Points</p>
-                </div>
-            </div>
-            
-            <!-- Student Card 4 -->
-            <div class="student-card" data-skill="web">
-                <div class="rank">#4</div>
-                <div class="student-info">
-                    <img src="https://ui-avatars.com/api/?name=Priya+Patel&background=FDB833&color=fff" alt="Priya Patel" class="avatar">
-                    <div class="details">
-                        <h4>Priya Patel</h4>
-                        <p>Information Tech, 3rd Year</p>
-                    </div>
-                </div>
-                <div class="student-skills">
-                    <span class="skill-tag">Vue.js</span>
-                    <span class="skill-tag">PostgreSQL</span>
-                    <span class="skill-tag">Docker</span>
-                </div>
-                <div class="merit-score">
-                    <div class="score-ring">
-                        <span>2,950</span>
-                    </div>
-                    <p>Merit Points</p>
-                </div>
+            <div style="text-align:center; color: var(--text-secondary); padding: 2rem;">
+                <i class="fa-solid fa-spinner fa-spin"></i> Loading latest merit data from C++ backend...
             </div>
         </div>
     </section>

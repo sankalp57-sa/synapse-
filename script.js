@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     */
 
     // 3. Fetch Students from C++ Backend API
-    async function loadStudents() {
+    window.loadStudents = async function() {
         const grid = document.getElementById('student-grid');
         try {
             const response = await fetch('/api/students');
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 4. Fetch Initial Events
-    async function loadEvents() {
+    window.loadEvents = async function() {
         try {
             const response = await fetch('/api/events');
             const events = await response.json();
