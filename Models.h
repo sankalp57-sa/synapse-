@@ -47,10 +47,13 @@ private: // Encapsulation: Strict protection of sensitive data
     int year;
     float cgpa;
     int experience;
+    string appliedClub;
+    string membershipStatus;
 
 public:
-    Student(string _id, string _name, string _email, string _skill, int _year = 1, float _cgpa = 0.0f, int _exp = 0) 
-        : User(_id, _name, _email), primarySkill(_skill), year(_year), cgpa(_cgpa), experience(_exp), meritPoints(0) {
+    Student(string _id, string _name, string _email, string _skill, int _year = 1, float _cgpa = 0.0f, int _exp = 0, string _club = "none", string _status = "none") 
+        : User(_id, _name, _email), primarySkill(_skill), year(_year), cgpa(_cgpa), experience(_exp), 
+          appliedClub(_club), membershipStatus(_status), meritPoints(0) {
             calculateInitialMerit();
         }
 
@@ -70,6 +73,11 @@ public:
     int getYear() const { return year; }
     float getCgpa() const { return cgpa; }
     int getExperience() const { return experience; }
+    string getAppliedClub() const { return appliedClub; }
+    string getMembershipStatus() const { return membershipStatus; }
+
+    void setAppliedClub(string club) { appliedClub = club; }
+    void setMembershipStatus(string status) { membershipStatus = status; }
 
     // Polymorphism Override
     void displayProfile() const override {

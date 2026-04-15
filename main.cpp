@@ -43,16 +43,29 @@ void loadDatabase() {
         getline(ss, email, '|');
         getline(ss, skill, '|');
         
-        string yearStr, cgpaStr, expStr;
+        string yearStr, cgpaStr, expStr, club = "none", status = "none", pointsStr;
         int year = 1, experience = 0, points = 0;
         float cgpa = 0.0f;
 
         if (getline(ss, yearStr, '|')) year = stoi(yearStr);
         if (getline(ss, cgpaStr, '|')) cgpa = stof(cgpaStr);
         if (getline(ss, expStr, '|')) experience = stoi(expStr);
-        ss >> points;
         
-        Student* s = new Student(id, name, email, skill, year, cgpa, experience);
+        // Handle optional club/status fields
+        string temp1, temp2, temp3;
+        if (getline(ss, temp1, '|')) {
+            if (getline(ss, temp2, '|')) {
+                // We have at least 10 fields
+                club = temp1;
+                status = temp2;
+                if (getline(ss, temp3, '|')) points = stoi(temp3);
+            } else {
+                // Only 9 fields? (Original was 8)
+                points = stoi(temp1); 
+            }
+        }
+        
+        Student* s = new Student(id, name, email, skill, year, cgpa, experience, club, status);
         s->setMeritPoints(points);
         
         directory.insert(s);
@@ -72,7 +85,7 @@ void saveStudent(Student* s) {
     ofstream sfile("students.txt", ios::app);
     sfile << s->getId() << "|" << s->getName() << "|" << s->getEmail() << "|" << s->getSkill() 
           << "|" << s->getYear() << "|" << s->getCgpa() << "|" << s->getExperience() 
-          << "|" << s->getMeritPoints() << "\n";
+          << "|" << s->getAppliedClub() << "|" << s->getMembershipStatus() << "|" << s->getMeritPoints() << "\n";
     sfile.close();
 }
 
@@ -237,9 +250,7 @@ void startWebServer() {
     });
 
     svr.Post("/api/apply", [&extractJsonString, &extractJsonNumber](const httplib::Request& req, httplib::Response& res) {
-        // Very basic manual JSON extraction to avoid external dependencies like nlohmann/json
         string body = req.body;
-
         string name = extractJsonString(body, "name");
         string email = extractJsonString(body, "email");
         string skill = extractJsonString(body, "skill");
@@ -258,17 +269,123 @@ void startWebServer() {
         }
 
         string id = "S" + to_string(rand() % 1000 + 200); 
-        Student* s = new Student(id, name, email, skill, year, cgpa, exp);
+        Student* s = new Student(id, name, email, skill, year, cgpa, exp, club, "pending");
         
         directory.insert(s);
         skills.indexStudent(s);
         leaderboard.insertOrUpdate(s);
-        saveStudent(s);
-        historyStack.logEvent("New Application: " + name + " to " + club);
+        
+        // Remove old file and write all (simplest way to update status without complex seek)
+        vector<Student*> allS = directory.getAllStudents();
+        ofstream sfile("students.txt");
+        for(auto st : allS) {
+            sfile << st->getId() << "|" << st->getName() << "|" << st->getEmail() << "|" << st->getSkill() 
+                  << "|" << st->getYear() << "|" << st->getCgpa() << "|" << st->getExperience() 
+                  << "|" << st->getAppliedClub() << "|" << st->getMembershipStatus() << "|" << st->getMeritPoints() << "\n";
+        }
+        sfile.close();
 
+        historyStack.logEvent("New Application: " + name + " to " + club + " (Pending)");
         string responseJson = "{\"status\": \"success\", \"meritPoints\": " + to_string(s->getMeritPoints()) + ", \"studentId\": \"" + id + "\"}";
         res.status = 200;
         res.set_content(responseJson, "application/json");
+    });
+
+    // --- PRESIDENT API ---
+
+    svr.Post("/api/president/login", [&extractJsonString](const httplib::Request& req, httplib::Response& res) {
+        string club = extractJsonString(req.body, "club");
+        string pass = extractJsonString(req.body, "password");
+        if (club == pass && !club.empty()) {
+            res.set_content("{\"status\":\"success\"}", "application/json");
+        } else {
+            res.status = 401;
+            res.set_content("{\"status\":\"error\", \"message\":\"Invalid credentials\"}", "application/json");
+        }
+    });
+
+    svr.Get("/api/president/requests", [](const httplib::Request& req, httplib::Response& res) {
+        string club = req.get_param_value("club");
+        vector<Student*> all = directory.getAllStudents();
+        stringstream json;
+        json << "[";
+        bool first = true;
+        for (auto s : all) {
+            if (s->getAppliedClub() == club && s->getMembershipStatus() == "pending") {
+                if (!first) json << ",";
+                json << "{\"id\":\"" << s->getId() << "\", \"name\":\"" << s->getName() 
+                     << "\", \"skill\":\"" << s->getSkill() << "\", \"cgpa\":" << s->getCgpa() << "}";
+                first = false;
+            }
+        }
+        json << "]";
+        res.set_content(json.str(), "application/json");
+    });
+
+    svr.Get("/api/president/members", [](const httplib::Request& req, httplib::Response& res) {
+        string club = req.get_param_value("club");
+        vector<Student*> all = directory.getAllStudents();
+        stringstream json;
+        json << "[";
+        bool first = true;
+        for (auto s : all) {
+            if (s->getAppliedClub() == club && s->getMembershipStatus() == "accepted") {
+                if (!first) json << ",";
+                json << "{\"id\":\"" << s->getId() << "\", \"name\":\"" << s->getName() 
+                     << "\", \"skill\":\"" << s->getSkill() << "\"}";
+                first = false;
+            }
+        }
+        json << "]";
+        res.set_content(json.str(), "application/json");
+    });
+
+    svr.Post("/api/president/action", [&extractJsonString](const httplib::Request& req, httplib::Response& res) {
+        string id = extractJsonString(req.body, "id");
+        string action = extractJsonString(req.body, "action"); // "accepted" or "rejected"
+        Student* s = directory.getStudent(id);
+        if (s) {
+            s->setMembershipStatus(action);
+            
+            // Rewrite database
+            vector<Student*> allS = directory.getAllStudents();
+            ofstream sfile("students.txt");
+            for(auto st : allS) {
+                sfile << st->getId() << "|" << st->getName() << "|" << st->getEmail() << "|" << st->getSkill() 
+                      << "|" << st->getYear() << "|" << st->getCgpa() << "|" << st->getExperience() 
+                      << "|" << st->getAppliedClub() << "|" << st->getMembershipStatus() << "|" << st->getMeritPoints() << "\n";
+            }
+            sfile.close();
+            
+            res.set_content("{\"status\":\"success\"}", "application/json");
+        } else {
+            res.status = 404;
+            res.set_content("{\"status\":\"error\"}", "application/json");
+        }
+    });
+
+    svr.Post("/api/president/remove", [&extractJsonString](const httplib::Request& req, httplib::Response& res) {
+        string id = extractJsonString(req.body, "id");
+        Student* s = directory.getStudent(id);
+        if (s) {
+            s->setMembershipStatus("none");
+            s->setAppliedClub("none");
+            
+            // Rewrite database
+            vector<Student*> allS = directory.getAllStudents();
+            ofstream sfile("students.txt");
+            for(auto st : allS) {
+                sfile << st->getId() << "|" << st->getName() << "|" << st->getEmail() << "|" << st->getSkill() 
+                      << "|" << st->getYear() << "|" << st->getCgpa() << "|" << st->getExperience() 
+                      << "|" << st->getAppliedClub() << "|" << st->getMembershipStatus() << "|" << st->getMeritPoints() << "\n";
+            }
+            sfile.close();
+            
+            res.set_content("{\"status\":\"success\"}", "application/json");
+        } else {
+            res.status = 404;
+            res.set_content("{\"status\":\"error\"}", "application/json");
+        }
     });
 
     int port = 8080;

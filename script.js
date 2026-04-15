@@ -3,15 +3,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize Socket.io connection (Disabled for C++ compatibility)
     // const socket = io();
 
-    // 1. Navbar Scroll Effect
-    const navbar = document.getElementById('navbar');
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
-    });
+    // 1. Initial State & Session Handling
+    const savedUser = localStorage.getItem('synapse_user');
+    if (savedUser) {
+        showUser(JSON.parse(savedUser));
+    }
+
+    // Refresh everything on load
+    window.loadStudents();
+    window.loadEvents();
+
+    // President Session check
+    const savedPres = localStorage.getItem('synapse_president_club');
+    if (savedPres) {
+        showPresidentDashboard(savedPres);
+    }
 
     // 2. Real-Time Event Listener (Disabled)
     /*
@@ -313,18 +319,30 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.classList.remove('active');
     });
 
-    // 10. User Session & Login Logic
+    // 10. Role Display & Sessions
     window.onLoginSuccess = function(user) {
         localStorage.setItem('synapse_user', JSON.stringify(user));
         showUser(user);
     };
 
     function showUser(user) {
-        const userDisplay = document.getElementById('user-display');
-        const userName = document.getElementById('user-name');
-        if (userDisplay && userName) {
-            userName.innerText = `Welcome, ${user.name}!`;
-            userDisplay.style.display = 'flex';
+        const profile = document.getElementById('user-display-status');
+        if (profile) {
+            profile.style.display = 'block';
+            document.getElementById('display-name').innerText = user.name;
+            document.getElementById('display-id').innerText = user.id;
+            document.getElementById('display-avatar').src = `https://ui-avatars.com/api/?name=${user.name.replace(' ', '+')}&background=random`;
+            
+            // Re-fetch student to get status
+            fetch(`/api/student/${user.id}`).then(res => res.json()).then(data => {
+                if(data.status === "success") {
+                    const statusText = document.getElementById('display-status');
+                    statusText.innerText = data.membershipStatus === "none" ? "(NOT-MEMBER)" : 
+                                         data.membershipStatus === "pending" ? `(PENDING: ${data.appliedClub})` :
+                                         `(MEMBER: ${data.appliedClub})`;
+                    statusText.style.color = data.membershipStatus === "accepted" ? "#00e676" : "#3b82f6";
+                }
+            });
         }
         // Hide the initial role modal if it's still there
         const roleModal = document.getElementById('role-modal');

@@ -89,6 +89,16 @@
             <div class="shape shape-2"></div>
         </div>
         <div class="hero-content">
+            <div id="user-display-status" style="margin-bottom: 1.5rem; display: none;">
+                <div class="card" style="display: inline-flex; align-items: center; gap: 1rem; padding: 0.5rem 1.5rem; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 50px; border: 1px solid rgba(255,255,255,0.1);">
+                    <img id="display-avatar" src="https://ui-avatars.com/api/?name=User&background=random" style="width: 32px; height: 32px; border-radius: 50%;">
+                    <div>
+                        <span id="display-name" style="font-weight: 600; font-family: 'Outfit';">Guest User</span>
+                        <span id="display-status" style="margin-left: 10px; font-size: 0.75rem; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px;">(PENDING)</span>
+                        <div style="font-size: 0.7rem; color: var(--text-secondary);">Student ID: #<span id="display-id">None</span></div>
+                    </div>
+                </div>
+            </div>
             <h1>Connect. Contribute. <span class="gradient-text">Level Up.</span></h1>
             <p>The ultimate platform for college societies. Showcase your skills, earn merit points through active participation, and build a verifiable portfolio before you even graduate.</p>
             <div class="hero-buttons">
@@ -339,7 +349,8 @@
                 <ul>
                     <li><a href="#societies">Browse Societies</a></li>
                     <li><a href="#leaderboard">Leaderboard</a></li>
-                    <li><a href="#">Verify Skills</a></li>
+                    <li><a href="#" onclick="openPresidentLogin()">President Login</a></li>
+                    <li><a href="#apply" class="nav-cta">Join a Society</a></li>
                 </ul>
             </div>
             <div class="footer-links">
@@ -397,7 +408,54 @@
         </div>
     </div>
 
-    <!-- Custom JavaScript -->
+    <!-- President Dashboard (Hidden by default) -->
+    <section class="container" id="president-section" style="display: none; margin-top: 4rem;">
+        <div class="section-header">
+            <span class="badge" id="president-club-badge">Club: None</span>
+            <h2>President <span class="gradient-text">Dashboard</span></h2>
+            <button onclick="logoutPresident()" class="btn-outline" style="padding: 5px 15px; font-size: 0.9rem;">Logout</button>
+        </div>
+
+        <div class="card" style="margin-bottom: 2rem;">
+            <h3><i class="fa-solid fa-clock-rotate-left"></i> Pending Requests</h3>
+            <div id="pending-requests" style="margin-top: 1rem;">
+                <p style="color: var(--text-secondary);">No pending requests for your club.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3><i class="fa-solid fa-users"></i> Club Members</h3>
+            <div id="club-members" style="margin-top: 1rem;">
+                <p style="color: var(--text-secondary);">Your club has no members yet.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- President Login Modal -->
+    <div id="presidentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePresidentLogin()">&times;</span>
+            <h2>President <span class="gradient-text">Login</span></h2>
+            <p>Access your club's recruitment dashboard.</p>
+            <form id="presidentLoginForm">
+                <div class="form-group">
+                    <label>Select Club</label>
+                    <select id="login-club" required>
+                        <option value="Coding">Coding</option>
+                        <option value="Design">Design</option>
+                        <option value="Robotics">Robotics</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Club Password</label>
+                    <input type="password" id="login-password" placeholder="Hint: Club Name" required>
+                </div>
+                <button type="submit" class="btn-primary">Unlock Dashboard</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- C++ Backend Connection -->
     <script src="script.js"></script>
 
     <!-- Role Selection Logic -->
