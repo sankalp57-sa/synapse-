@@ -122,25 +122,72 @@ void startWebServer() {
         res.set_content(buffer.str(), "text/html");
     });
 
-    svr.Post("/api/apply", [](const httplib::Request& req, httplib::Response& res) {
+    svr.Get("/style.css", [](const httplib::Request& req, httplib::Response& res) {
+        ifstream in("style.css");
+        if (in) {
+            stringstream buffer; buffer << in.rdbuf();
+            res.set_content(buffer.str(), "text/css");
+        }
+    });
+
+    svr.Get("/script.js", [](const httplib::Request& req, httplib::Response& res) {
+        ifstream in("script.js");
+        if (in) {
+            stringstream buffer; buffer << in.rdbuf();
+            res.set_content(buffer.str(), "application/javascript");
+        }
+    });
+
+    // Helper functions for parsing JSON
+    auto extractJsonString = [](string json, string key) {
+        size_t pos = json.find("\"" + key + "\":");
+        if (pos == string::npos) return string("");
+        size_t start = json.find("\"", pos + key.length() + 2) + 1;
+        size_t end = json.find("\"", start);
+        return json.substr(start, end - start);
+    };
+    
+    auto extractJsonNumber = [](string json, string key) {
+        size_t pos = json.find("\"" + key + "\":");
+        if (pos == string::npos) return 0.0;
+        size_t start = pos + key.length() + 3;
+        size_t end = json.find_first_of(",}", start);
+        return atof(json.substr(start, end - start).c_str());
+    };
+
+    svr.Post("/api/admin/event", [&extractJsonString](const httplib::Request& req, httplib::Response& res) {
+        string desc = extractJsonString(req.body, "description");
+        if (desc.empty()) { res.status = 400; return; }
+        saveEvent(desc);
+        historyStack.logEvent(desc);
+        res.status = 200;
+        res.set_content("{\"status\":\"success\"}", "application/json");
+    });
+
+    svr.Post("/api/admin/student", [&extractJsonString, &extractJsonNumber](const httplib::Request& req, httplib::Response& res) {
+        string id = extractJsonString(req.body, "id");
+        string name = extractJsonString(req.body, "name");
+        string email = extractJsonString(req.body, "email");
+        string skill = extractJsonString(req.body, "skill");
+
+        if (directory.getStudent(id) != nullptr) {
+            res.status = 400;
+            res.set_content("{\"status\":\"error\", \"message\":\"Student ID already exists\"}", "application/json");
+            return;
+        }
+
+        Student* s = new Student(id, name, email, skill, 1, 0.0, 0); // Default values
+        saveStudent(s);
+        directory.insert(s);
+        skills.indexStudent(s);
+        leaderboard.insertOrUpdate(s);
+        res.status = 200;
+        res.set_content("{\"status\":\"success\"}", "application/json");
+    });
+
+    svr.Post("/api/apply", [&extractJsonString, &extractJsonNumber](const httplib::Request& req, httplib::Response& res) {
         // Very basic manual JSON extraction to avoid external dependencies like nlohmann/json
         string body = req.body;
-        
-        auto extractJsonString = [](string json, string key) {
-            size_t pos = json.find("\"" + key + "\":");
-            if (pos == string::npos) return string("");
-            size_t start = json.find("\"", pos + key.length() + 2) + 1;
-            size_t end = json.find("\"", start);
-            return json.substr(start, end - start);
-        };
-        
-        auto extractJsonNumber = [](string json, string key) {
-            size_t pos = json.find("\"" + key + "\":");
-            if (pos == string::npos) return 0.0;
-            size_t start = pos + key.length() + 3;
-            size_t end = json.find_first_of(",}", start);
-            return atof(json.substr(start, end - start).c_str());
-        };
 
         string name = extractJsonString(body, "name");
         string email = extractJsonString(body, "email");

@@ -267,26 +267,74 @@
 
     <!-- Logic for forms -->
     <script>
-        document.getElementById('eventForm').addEventListener('submit', (e) => {
+        document.getElementById('eventForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const msg = document.getElementById('eventMsg');
-            msg.style.display = 'block';
-            msg.innerText = "✅ Broadcast sent successfully!";
-            setTimeout(() => { msg.style.display = 'none'; e.target.reset(); }, 3000);
+            const desc = document.getElementById('eventDesc').value;
+            
+            try {
+                const response = await fetch('/api/admin/event', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ description: desc })
+                });
+                
+                if (response.ok) {
+                    msg.style.display = 'block';
+                    msg.style.color = 'var(--accent-cyan)';
+                    msg.innerText = "✅ Broadcast sent successfully!";
+                    setTimeout(() => { msg.style.display = 'none'; e.target.reset(); }, 3000);
+                } else {
+                    msg.style.display = 'block';
+                    msg.style.color = '#ff4d4d';
+                    msg.innerText = "❌ Failed to send broadcast.";
+                }
+            } catch (err) {
+                msg.style.display = 'block';
+                msg.style.color = '#ff4d4d';
+                msg.innerText = "Error: Could not connect to backend server. Is it running?";
+            }
         });
 
         document.getElementById('clubForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            alert("Society Registered Successfully! (Mockup)");
+            alert("Society Registered Successfully! (Mockup - Add endpoint to C++ if needed)");
             e.target.reset();
         });
 
-        document.getElementById('studentForm').addEventListener('submit', (e) => {
+        document.getElementById('studentForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const msg = document.getElementById('studentMsg');
-            msg.style.display = 'block';
-            msg.innerText = "✅ Student profile saved to database successfully!";
-            setTimeout(() => { msg.style.display = 'none'; e.target.reset(); }, 3000);
+            const data = {
+                id: document.getElementById('studentId').value,
+                name: document.getElementById('studentName').value,
+                email: document.getElementById('studentEmail').value,
+                skill: document.getElementById('studentSkill').value
+            };
+            
+            try {
+                const response = await fetch('/api/admin/student', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    msg.style.display = 'block';
+                    msg.style.color = 'var(--accent-cyan)';
+                    msg.innerText = "✅ Student profile saved to database successfully!";
+                    setTimeout(() => { msg.style.display = 'none'; e.target.reset(); }, 3000);
+                } else {
+                    const error = await response.json();
+                    msg.style.display = 'block';
+                    msg.style.color = '#ff4d4d';
+                    msg.innerText = `❌ ${error.message || 'Failed to save student'}`;
+                }
+            } catch (err) {
+                msg.style.display = 'block';
+                msg.style.color = '#ff4d4d';
+                msg.innerText = "Error: Could not connect to backend server. Is it running?";
+            }
         });
     </script>
 </body>
