@@ -278,8 +278,8 @@
                         document.getElementById('responseMsg').innerText = `❌ ${textResult}`;
                     }
                 } catch (err) {
-                    document.getElementById('responseMsg').style.color = '#00e676';
-                    document.getElementById('responseMsg').innerText = `Network/CORS fallback: Submitted successfully!`;
+                    document.getElementById('responseMsg').style.color = '#ff4d4d';
+                    document.getElementById('responseMsg').innerText = `Error: Could not connect to backend server. Is the backend running?`;
                 }
             });
         </script>
