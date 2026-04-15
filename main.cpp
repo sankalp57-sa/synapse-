@@ -193,6 +193,11 @@ int main() {
     do {
         displayMenu();
         if (!(cin >> choice)) {
+            if (cin.eof()) {
+                // In a Docker/headless environment, just sleep instead of exiting or looping
+                std::this_thread::sleep_for(std::chrono::hours(24 * 365));
+                continue;
+            }
             cin.clear();
             cin.ignore(10000, '\n');
             continue;
