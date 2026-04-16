@@ -38,35 +38,48 @@ void loadDatabase() {
     while (getline(sfile, line)) {
         if (line.empty()) continue;
         stringstream ss(line);
+        string id, name, email, pass, skill, club = "none", status = "none";
+        int yr = 1, sem = 1, exp = 0, pts = 0;
+        float cg = 0.0f, sg = 0.0f;
+
         getline(ss, id, '|');
         getline(ss, name, '|');
         getline(ss, email, '|');
-        getline(ss, skill, '|');
         
-        string yearStr, cgpaStr, expStr, club = "none", status = "none", pointsStr;
-        int year = 1, experience = 0, points = 0;
-        float cgpa = 0.0f;
+        // This parser needs to be robust for the NEW format
+        // ID|Name|Email|Password|Skill|Year|Sem|CGPA|SGPA|Exp|Club|Status|Points
+        string field;
+        vector<string> fields;
+        while(getline(ss, field, '|')) fields.push_back(field);
 
-        if (getline(ss, yearStr, '|')) year = stoi(yearStr);
-        if (getline(ss, cgpaStr, '|')) cgpa = stof(cgpaStr);
-        if (getline(ss, expStr, '|')) experience = stoi(expStr);
-        
-        // Handle optional club/status fields
-        string temp1, temp2, temp3;
-        if (getline(ss, temp1, '|')) {
-            if (getline(ss, temp2, '|')) {
-                // We have at least 10 fields
-                club = temp1;
-                status = temp2;
-                if (getline(ss, temp3, '|')) points = stoi(temp3);
-            } else {
-                // Only 9 fields? (Original was 8)
-                points = stoi(temp1); 
+        if (fields.size() >= 10) {
+            // New Format
+            pass = fields[0];
+            skill = fields[1];
+            yr = stoi(fields[2]);
+            sem = stoi(fields[3]);
+            cg = stof(fields[4]);
+            sg = stof(fields[5]);
+            exp = stoi(fields[6]);
+            club = fields[7];
+            status = fields[8];
+            pts = stoi(fields[9]);
+        } else {
+            // Old Format (Migration)
+            skill = fields[0];
+            yr = stoi(fields[1]);
+            cg = stof(fields[2]);
+            exp = stoi(fields[3]);
+            pass = id; // Default password for migration
+            if (fields.size() > 4) {
+                club = fields[4];
+                status = fields[5];
+                if (fields.size() > 6) pts = stoi(fields[6]);
             }
         }
         
-        Student* s = new Student(id, name, email, skill, year, cgpa, experience, club, status);
-        s->setMeritPoints(points);
+        Student* s = new Student(id, name, email, pass, skill, yr, sem, cg, sg, exp, club, status);
+        s->setMeritPoints(pts);
         
         directory.insert(s);
         skills.indexStudent(s);
@@ -83,9 +96,20 @@ void loadDatabase() {
 
 void saveStudent(Student* s) {
     ofstream sfile("students.txt", ios::app);
-    sfile << s->getId() << "|" << s->getName() << "|" << s->getEmail() << "|" << s->getSkill() 
-          << "|" << s->getYear() << "|" << s->getCgpa() << "|" << s->getExperience() 
+    sfile << s->getId() << "|" << s->getName() << "|" << s->getEmail() << "|" << s->getPassword() << "|" << s->getSkill() 
+          << "|" << s->getYear() << "|" << s->getSemester() << "|" << s->getCgpa() << "|" << s->getSgpa() << "|" << s->getExperience() 
           << "|" << s->getAppliedClub() << "|" << s->getMembershipStatus() << "|" << s->getMeritPoints() << "\n";
+    sfile.close();
+}
+
+void rewriteAllStudents() {
+    vector<Student*> all = directory.getAllStudents();
+    ofstream sfile("students.txt");
+    for(auto s : all) {
+        sfile << s->getId() << "|" << s->getName() << "|" << s->getEmail() << "|" << s->getPassword() << "|" << s->getSkill() 
+              << "|" << s->getYear() << "|" << s->getSemester() << "|" << s->getCgpa() << "|" << s->getSgpa() << "|" << s->getExperience() 
+              << "|" << s->getAppliedClub() << "|" << s->getMembershipStatus() << "|" << s->getMeritPoints() << "\n";
+    }
     sfile.close();
 }
 
@@ -192,9 +216,19 @@ void startWebServer() {
         Student* s = directory.getStudent(id);
         if (s) {
             stringstream json;
-            json << "{\"status\":\"success\", \"id\":\"" << s->getId() 
-                 << "\", \"name\":\"" << s->getName() 
-                 << "\", \"points\":" << s->getMeritPoints() << "}";
+            json << "{"
+                 << "\"status\":\"success\","
+                 << "\"id\":\"" << s->getId() << "\","
+                 << "\"name\":\"" << s->getName() << "\","
+                 << "\"skill\":\"" << s->getSkill() << "\","
+                 << "\"year\":" << s->getYear() << ","
+                 << "\"sem\":" << s->getSemester() << ","
+                 << "\"cgpa\":" << s->getCgpa() << ","
+                 << "\"experience\":" << s->getExperience() << ","
+                 << "\"appliedClub\":\"" << s->getAppliedClub() << "\","
+                 << "\"membershipStatus\":\"" << s->getMembershipStatus() << "\","
+                 << "\"points\":" << s->getMeritPoints()
+                 << "}";
             res.set_content(json.str(), "application/json");
         } else {
             res.status = 404;
@@ -240,7 +274,7 @@ void startWebServer() {
             return;
         }
 
-        Student* s = new Student(id, name, email, skill, 1, 0.0, 0); // Default values
+        Student* s = new Student(id, name, email, id, skill, 1, 1, 0.0, 0.0, 0); // Default values (Year 1, Sem 1)
         saveStudent(s);
         directory.insert(s);
         skills.indexStudent(s);
@@ -250,45 +284,49 @@ void startWebServer() {
     });
 
     svr.Post("/api/apply", [&extractJsonString, &extractJsonNumber](const httplib::Request& req, httplib::Response& res) {
-        string body = req.body;
-        string name = extractJsonString(body, "name");
-        string email = extractJsonString(body, "email");
-        string skill = extractJsonString(body, "skill");
-        string club = extractJsonString(body, "club");
-        int year = (int)extractJsonNumber(body, "year");
-        float cgpa = (float)extractJsonNumber(body, "cgpa");
-        int exp = (int)extractJsonNumber(body, "experience");
+        string b = req.body;
+        string id = extractJsonString(b, "id");
+        string name = extractJsonString(b, "name");
+        string email = extractJsonString(b, "email");
+        string skill = extractJsonString(b, "skill");
+        string club = extractJsonString(b, "club");
+        int yr = (int)extractJsonNumber(b, "year");
+        int sem = (int)extractJsonNumber(b, "semester");
+        float cg = (float)extractJsonNumber(b, "cgpa");
+        float sg = (float)extractJsonNumber(b, "sgpa");
+        int ex = (int)extractJsonNumber(b, "experience");
 
-        if (year != 1) {
-            float requiredCgpa = (clubCriteria.count(club) ? clubCriteria[club] : 7.0);
-            if (cgpa < requiredCgpa) {
-                res.status = 400;
-                res.set_content("Does not meet minimum CGPA criteria (" + to_string(requiredCgpa) + ") for " + club, "text/plain");
-                return;
-            }
+        Student* s = directory.getStudent(id);
+        if (!s) {
+            res.status = 404;
+            res.set_content("{\"status\":\"error\", \"message\":\"Login first to apply\"}", "application/json");
+            return;
         }
 
-        string id = "S" + to_string(rand() % 1000 + 200); 
-        Student* s = new Student(id, name, email, skill, year, cgpa, exp, club, "pending");
-        
-        directory.insert(s);
-        skills.indexStudent(s);
-        leaderboard.insertOrUpdate(s);
-        
-        // Remove old file and write all (simplest way to update status without complex seek)
-        vector<Student*> allS = directory.getAllStudents();
-        ofstream sfile("students.txt");
-        for(auto st : allS) {
-            sfile << st->getId() << "|" << st->getName() << "|" << st->getEmail() << "|" << st->getSkill() 
-                  << "|" << st->getYear() << "|" << st->getCgpa() << "|" << st->getExperience() 
-                  << "|" << st->getAppliedClub() << "|" << st->getMembershipStatus() << "|" << st->getMeritPoints() << "\n";
-        }
-        sfile.close();
+        // 1. Merit Decision logic: SGPA >= 9.0 -> Immediate Selection
+        string status = (sg >= 9.0f) ? "Selected" : "Pending";
+        bool autoApproved = (status == "Selected");
 
-        historyStack.logEvent("New Application: " + name + " to " + club + " (Pending)");
-        string responseJson = "{\"status\": \"success\", \"meritPoints\": " + to_string(s->getMeritPoints()) + ", \"studentId\": \"" + id + "\"}";
+        s->setAppliedClub(club);
+        s->setMembershipStatus(status);
+        
+        rewriteAllStudents();
+        
+        // 4. Activity Logs
+        historyStack.logEvent("New Application: " + name + " for " + club + (autoApproved ? " (Elite Selection)" : ""));
+        saveEvent("App: " + name + " for " + club + (autoApproved ? " (Elite Selection)" : ""));
+
+        // 5. Response
+        stringstream resJson;
+        resJson << "{"
+                << "\"status\":\"success\","
+                << "\"studentId\":\"" << id << "\","
+                << "\"autoApproved\":" << (autoApproved ? "true" : "false") << ","
+                << "\"meritPoints\":" << s->getMeritPoints() << ","
+                << "\"message\":\"" << (autoApproved ? "Elite Selection: Auto-Approved!" : "Application submitted! Wait for President review.") << "\""
+                << "}";
         res.status = 200;
-        res.set_content(responseJson, "application/json");
+        res.set_content(resJson.str(), "application/json");
     });
 
     // --- PRESIDENT API ---
@@ -440,7 +478,7 @@ int main() {
                     if (directory.getStudent(id) != nullptr) {
                         cout << "❌ Error: Student ID already exists!\n";
                     } else {
-                        Student* s = new Student(id, name, email, skill, 1, 0.0, 0); // basic fallback
+                        Student* s = new Student(id, name, email, id, skill, 1, 1, 0.0, 0.0, 0); // basic fallback
                         saveStudent(s);
                         directory.insert(s);
                         skills.indexStudent(s);

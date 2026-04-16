@@ -42,17 +42,20 @@ public:
 // Derived Class 1: Student
 class Student : public User {
 private: // Encapsulation: Strict protection of sensitive data
+    string password;
     int meritPoints;
     string primarySkill;
     int year;
+    int semester;
     float cgpa;
+    float sgpa;
     int experience;
     string appliedClub;
     string membershipStatus;
 
 public:
-    Student(string _id, string _name, string _email, string _skill, int _year = 1, float _cgpa = 0.0f, int _exp = 0, string _club = "none", string _status = "none") 
-        : User(_id, _name, _email), primarySkill(_skill), year(_year), cgpa(_cgpa), experience(_exp), 
+    Student(string _id, string _name, string _email, string _pass, string _skill, int _year = 1, int _sem = 1, float _cgpa = 0.0f, float _sgpa = 0.0f, int _exp = 0, string _club = "none", string _status = "none") 
+        : User(_id, _name, _email), password(_pass), primarySkill(_skill), year(_year), semester(_sem), cgpa(_cgpa), sgpa(_sgpa), experience(_exp), 
           appliedClub(_club), membershipStatus(_status), meritPoints(0) {
             calculateInitialMerit();
         }
@@ -66,12 +69,16 @@ public:
     }
 
     // Setters & Getters
+    string getPassword() const { return password; }
+    void setPassword(string p) { password = p; }
     void addMeritPoints(int points) { meritPoints += points; }
     void setMeritPoints(int points) { meritPoints = points; }
     int getMeritPoints() const { return meritPoints; }
     string getSkill() const { return primarySkill; }
     int getYear() const { return year; }
+    int getSemester() const { return semester; }
     float getCgpa() const { return cgpa; }
+    float getSgpa() const { return sgpa; }
     int getExperience() const { return experience; }
     string getAppliedClub() const { return appliedClub; }
     string getMembershipStatus() const { return membershipStatus; }
@@ -83,7 +90,7 @@ public:
     void displayProfile() const override {
         cout << "--- STUDENT PROFILE ---" << endl;
         cout << "ID: " << id << " | Name: " << name << endl;
-        cout << "Year: " << year << " | CGPA: " << cgpa << " | Exp: " << experience << endl;
+        cout << "Year: " << year << " | CGPA: " << cgpa << " | SGPA: " << sgpa << " | Exp: " << experience << endl;
         cout << "Skill: " << primarySkill << " | Merit Points: " << meritPoints << endl;
         cout << "-----------------------" << endl;
     }

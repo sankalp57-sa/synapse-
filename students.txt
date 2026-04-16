@@ -1,8 +1,10 @@
-S105|SANKALP SINGH|25am1sa57@mitsgwl.ac.in|web design|2|8.5|12|0
-S104|PRASHANT SHARMA |25am1pr51@mitsgwl.ac.in|html|2|7.8|10|0
-S106|User|test@test.com|python|1|0.0|6|0
-S241|Sankalp Singh|sms14012006@gmail.com|ss|1|0|3|30
-S123|asdf|asd@gmail.com|C++|1|0|0|0
-S241|SOMRAJ LODHI|25am1SO80@mitsgwl.ac.in|c++|1|0|5|50
-S241|sankalp|sms14012006@gmail.com|c++|1|0|5|50
-S241|somraj lodhi|25am1SO@mitsgwl.ac.in|python|1|0|4|40
+S104|PRASHANT SHARMA |25am1pr51@mitsgwl.ac.in|html|2|7.8|10|none|none|0
+S123|asdf|asd@gmail.com|C++|1|0|0|none|none|0
+S105|SANKALP SINGH|25am1sa57@mitsgwl.ac.in|web design|2|8.5|12|none|none|0
+S241|Test Pending|pending@test.com|Coding|2|7.5|2|Coding|pending|85
+S241|somraj lodhi|25am1SO@mitsgwl.ac.in|python|1|0|4|none|none|40
+S241|sankalp|sms14012006@gmail.com|c++|1|0|5|none|none|50
+S241|SOMRAJ LODHI|25am1SO80@mitsgwl.ac.in|c++|1|0|5|none|none|50
+S241|Sankalp Singh|sms14012006@gmail.com|ss|1|0|3|none|none|30
+S106|User|test@test.com|python|1|0|6|none|none|0
+S667|Test Elite|elite@test.com|Design|3|9.5|5|Design|accepted|120
