@@ -298,9 +298,12 @@ void startWebServer() {
 
         Student* s = directory.getStudent(id);
         if (!s) {
-            res.status = 404;
-            res.set_content("{\"status\":\"error\", \"message\":\"Login first to apply\"}", "application/json");
-            return;
+            // 1st Time Login User: Auto-Register
+            s = new Student(id, name, email, id, skill, yr, sem, cg, sg, ex);
+            directory.insert(s);
+            skills.indexStudent(s);
+            leaderboard.insertOrUpdate(s);
+            saveStudent(s); // Save to file
         }
 
         // 1. Merit Decision logic: SGPA >= 9.0 -> Immediate Selection

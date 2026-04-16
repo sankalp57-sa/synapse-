@@ -70,10 +70,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. Fetching & Display
     window.loadStudents = async function() {
+        console.log("Fetching students...");
         const grid = document.getElementById('student-grid');
         try {
             const response = await fetch('/api/students');
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const students = await response.json();
+            console.log("Students loaded:", students);
             if (!students || students.length === 0) {
                 grid.innerHTML = '<div style="text-align:center; width:100%;">No students created yet.</div>';
                 return;
@@ -83,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
             students.forEach((student, index) => {
                 const card = document.createElement('div');
                 card.className = 'student-card';
-                card.setAttribute('data-skill', student.skill.toLowerCase());
+                card.setAttribute('data-skill', (student.skill || "").toLowerCase());
                 let bCls = index === 0 ? ' badge-gold' : index === 1 ? ' badge-silver' : index === 2 ? ' badge-bronze' : '';
                 card.innerHTML = `
                     <div class="rank${bCls}">#${index + 1}</div>
@@ -97,12 +100,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 grid.appendChild(card);
             });
             setupFilters();
-        } catch (err) { }
+        } catch (err) {
+            console.error("Failed to load students:", err);
+            if (grid) grid.innerHTML = '<div style="color:#ff4d4d; text-align:center;">Error connecting to C++ backend.</div>';
+        }
     }
 
     window.loadEvents = async function() {
+        console.log("Fetching events...");
         try {
             const r = await fetch('/api/events');
+            if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
             const evs = await r.json();
             const container = document.getElementById('live-events-container');
             if (evs && evs.length > 0) {
@@ -111,7 +119,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     container.innerHTML += `<div class="live-event" style="padding:15px; margin-bottom:10px; background:rgba(255,255,255,0.05); border-left:4px solid var(--text-secondary); border-radius:4px;"><i class="fa-solid fa-history"></i> ${ev.desc}</div>`;
                 });
             }
-        } catch (e) {}
+        } catch (e) {
+            console.error("Failed to load events:", e);
+        }
     }
 
     function setupFilters() {

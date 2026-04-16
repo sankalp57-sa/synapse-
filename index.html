@@ -301,6 +301,16 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
+            // Auto-fill form if user is logged in
+            function prefillForm() {
+                const user = JSON.parse(localStorage.getItem('synapse_user') || 'null');
+                if (user) {
+                    if (document.getElementById('apply-id')) document.getElementById('apply-id').value = user.id;
+                    if (document.getElementById('name')) document.getElementById('name').value = user.name || "";
+                }
+            }
+            setInterval(prefillForm, 1000); // Check every second to keep synced
+
             document.getElementById('applyForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const responseMsg = document.getElementById('responseMsg');
@@ -311,12 +321,14 @@
                 submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
                 
                 const data = {
+                    id: document.getElementById('apply-id').value,
                     name: document.getElementById('name').value,
                     email: document.getElementById('email').value,
                     skill: document.getElementById('skill').value,
                     year: parseInt(document.getElementById('year').value),
                     semester: parseInt(document.getElementById('semester').value),
                     cgpa: parseFloat(document.getElementById('cgpa').value) || 0,
+                    sgpa: parseFloat(document.getElementById('cgpa').value) || 0, // Backend auto-approval check
                     experience: parseInt(document.getElementById('experience').value),
                     club: document.getElementById('club').value
                 };
