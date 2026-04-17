@@ -12,10 +12,11 @@ WORKDIR /app
 # Copy the application source code and resources
 COPY . .
 
-# Compile the application
+# Compile the application (Linux build)
 RUN g++ -O3 main.cpp -o synapse_server -pthread
 
-# Make port 8080 available (as defined in main.cpp svr.listen)
+# Default port (Render will override this via environment variable)
+ENV PORT=8080
 EXPOSE 8080
 
 # Production settings

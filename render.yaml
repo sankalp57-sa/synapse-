@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: synapse-portal
+    runtime: docker
+    plan: free
+    region: ohio
+    envVars:
+      - key: PORT
+        value: 8080
+    healthCheckPath: /

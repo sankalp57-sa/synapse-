@@ -1,10 +1,6 @@
-S104|PRASHANT SHARMA |25am1pr51@mitsgwl.ac.in|html|2|7.8|10|none|none|0
-S123|asdf|asd@gmail.com|C++|1|0|0|none|none|0
-S105|SANKALP SINGH|25am1sa57@mitsgwl.ac.in|web design|2|8.5|12|none|none|0
-S241|Test Pending|pending@test.com|Coding|2|7.5|2|Coding|pending|85
-S241|somraj lodhi|25am1SO@mitsgwl.ac.in|python|1|0|4|none|none|40
-S241|sankalp|sms14012006@gmail.com|c++|1|0|5|none|none|50
-S241|SOMRAJ LODHI|25am1SO80@mitsgwl.ac.in|c++|1|0|5|none|none|50
-S241|Sankalp Singh|sms14012006@gmail.com|ss|1|0|3|none|none|30
-S106|User|test@test.com|python|1|0|6|none|none|0
-S667|Test Elite|elite@test.com|Design|3|9.5|5|Design|accepted|120
+S104|PRASHANT SHARMA|prashant@mitsgwl.ac.in|S104|Web Dev|1|1|8.5|8.5|0|none|none|0
+S105|SANKALP SINGH|sankalp@mitsgwl.ac.in|S105|Design|2|1|9.2|9.2|6|none|none|50
+S106|SOMRAJ LODHI|somraj@mitsgwl.ac.in|S106|C++|1|1|8.0|8.0|0|none|none|20
+S107|SHREYAS JAIN|shreyas@mitsgwl.ac.in|S107|Python|1|2|8.8|8.8|2|none|none|30
+S108|AKASH GUPTA|akash@mitsgwl.ac.in|S108|AI/ML|2|1|9.5|9.5|12|none|none|100
+S109|TEST USER|test@mitsgwl.ac.in|S109|Coding|1|1|7.5|7.5|0|none|none|0
