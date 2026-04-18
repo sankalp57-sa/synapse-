@@ -1,0 +1,7 @@
+[
+  {"name":"Coding", "type":"tech", "desc":"Algorithms and development hub."},
+  {"name":"Robotics", "type":"hardware", "desc":"IoT and mechanical design focus."},
+  {"name":"Debate", "type":"literature", "desc":"Model UN and debating."},
+  {"name":"Design", "type":"design", "desc":"UI/UX and creative design workshop."},
+  {"name":"hindi samiti", "type":"literature", "desc":"namaste"}
+]

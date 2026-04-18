@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
 
 using namespace std;
 
@@ -41,15 +40,15 @@ private:
     string primarySkill;
     int year, semester, experience;
     float cgpa, sgpa;
-    string appliedClub, membershipStatus;
+    string appliedClub, membershipStatus, applicationMessage, domain;
 
 public:
     Student(string _id, string _name, string _email, string _pass, string _skill, 
             int _year = 1, int _sem = 1, float _cgpa = 0.0f, float _sgpa = 0.0f, 
-            int _exp = 0, string _club = "none", string _status = "none") 
+            int _exp = 0, string _club = "none", string _status = "none", string _msg = "", string _domain = "none") 
         : User(_id, _name, _email), password(_pass), primarySkill(_skill), 
           year(_year), semester(_sem), cgpa(_cgpa), sgpa(_sgpa), experience(_exp), 
-          appliedClub(_club), membershipStatus(_status), meritPoints(0) {
+          appliedClub(_club), membershipStatus(_status), applicationMessage(_msg), domain(_domain), meritPoints(0) {
             calculateInitialMerit();
         }
 
@@ -71,10 +70,15 @@ public:
     int getExperience() const { return experience; }
     string getAppliedClub() const { return appliedClub; }
     string getMembershipStatus() const { return membershipStatus; }
+    string getApplicationMessage() const { return applicationMessage; }
+    string getDomain() const { return domain; }
 
     void setAppliedClub(string c) { appliedClub = c; }
     void setMembershipStatus(string s) { membershipStatus = s; }
+    void setApplicationMessage(string m) { applicationMessage = m; }
+    void setDomain(string d) { domain = d; }
     void setSkill(string s) { primarySkill = s; }
+
     void setYear(int y) { year = y; }
     void setSgpa(float s) { sgpa = s; }
     void setExperience(int e) { experience = e; }

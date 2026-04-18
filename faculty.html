@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synapse | Faculty Portal</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #12141d;
+            --bg-card: #1c202d;
+            --text-main: #f8fafc;
+            --text-secondary: #94a3b8;
+            --input-bg: #0f111a;
+            --border-color: rgba(255,255,255,0.08);
+            --gradient-btn: linear-gradient(135deg, #00e676 0%, #3b82f6 100%);
+            --accent-cyan: #00e676;
+        }
+
+        body {
+            margin: 0;
+            padding: 2rem;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .dashboard-container {
+            max-width: 1000px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 2rem;
+            margin-top: 40px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+        }
+
+        .card-full {
+            grid-column: span 2;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .card-header i {
+            font-size: 1.5rem;
+            color: #00e676;
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #00e676;
+            box-shadow: 0 0 0 3px rgba(0, 230, 118, 0.2);
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+        }
+
+        .btn-submit {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 1rem;
+            background: var(--gradient-btn);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.2s;
+            margin-top: 1rem;
+        }
+
+        .btn-submit:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .back-nav {
+            position: absolute;
+            top: 1.5rem;
+            left: 2rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-family: 'Outfit';
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.2s;
+        }
+        .back-nav:hover {
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            .card-full {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-nav"><i class="fa-solid fa-arrow-left"></i> Back to Main Site</a>
+
+    <div class="dashboard-container">
+        
+        <div class="card card-full" style="text-align: center; background: var(--gradient-btn); border: none;">
+            <h1 style="margin: 0; font-family: 'Outfit';">Faculty Dashboard</h1>
+            <p style="margin: 5px 0 0; opacity: 0.9;">System Administration & Club Oversight</p>
+        </div>
+
+        <!-- Hyped Club Card -->
+        <div class="card card-full" style="text-align: center; border: 1px solid #00e676;">
+            <div class="card-header" style="justify-content: center;">
+                <i class="fa-solid fa-fire" style="color: #ff5252;"></i>
+                <h2>Most Hyped Club on Campus</h2>
+            </div>
+            <h1 id="hyped-club-name" style="font-size: 2.5rem; margin: 10px 0; color: #00e676;">Loading...</h1>
+            <p id="hyped-club-members" style="color: var(--text-secondary); font-size: 1.1rem; margin: 0;">Evaluating members...</p>
+        </div>
+
+        <!-- Broadcast Event Card -->
+        <div class="card" id="card-broadcast">
+            <div class="card-header">
+                <i class="fa-solid fa-bullhorn" style="color: #00e676;"></i>
+                <h2>Broadcast Event</h2>
+            </div>
+            <form id="eventForm">
+                <div class="form-group">
+                    <label>Event Description</label>
+                    <input type="text" class="form-control" id="eventDesc" placeholder="e.g., CodeStorm Hackathon begins!" required>
+                </div>
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-paper-plane"></i> Send Broadcast
+                </button>
+            </form>
+            <div id="eventMsg" style="margin-top: 10px; color: var(--accent-cyan); display: none;"></div>
+        </div>
+
+        <!-- Register New Club Card -->
+        <div class="card" id="card-register-club">
+            <div class="card-header">
+                <i class="fa-solid fa-building-columns" style="color: #00e676;"></i>
+                <h2>Create New Club</h2>
+            </div>
+            <form id="clubForm">
+                <div class="form-group">
+                    <label>Society Name</label>
+                    <input type="text" class="form-control" id="clubName" placeholder="e.g., AI Enthusiasts" required>
+                </div>
+                <div class="form-group">
+                    <label>Category / Type</label>
+                    <select class="form-control" id="clubType">
+                        <option value="tech">Technology</option>
+                        <option value="design">Arts & Design</option>
+                        <option value="literature">Literature & Debate</option>
+                        <option value="hardware">Robotics & Hardware</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Short Description</label>
+                    <input type="text" class="form-control" id="clubDesc" placeholder="e.g., A place to explore neural networks." required>
+                </div>
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-plus"></i> Register Society
+                </button>
+            </form>
+        </div>
+
+        <!-- Manage Clubs List Card -->
+        <div class="card card-full">
+            <div class="card-header">
+                <i class="fa-solid fa-list-check" style="color: #00e676;"></i>
+                <h2>Manage Active Societies</h2>
+            </div>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                    <thead>
+                        <tr style="text-align: left; color: var(--text-secondary); border-bottom: 2px solid var(--border-color);">
+                            <th style="padding: 1rem;">Society Info</th>
+                            <th style="padding: 1rem;">Type</th>
+                            <th style="padding: 1rem; text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clubs-list">
+                        <tr>
+                            <td colspan="3" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Loading societies...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Check Role on Load
+        const role = localStorage.getItem('synapse_role');
+        if (role !== 'faculty') {
+            window.location.href = 'index.html';
+        }
+
+        // Load Hyped Club
+        async function loadHype() {
+            try {
+                const res = await fetch('/api/faculty/hype');
+                const data = await res.json();
+                document.getElementById('hyped-club-name').innerText = data.name + (data.name !== 'None' ? ' Society' : '');
+                document.getElementById('hyped-club-members').innerText = `${data.members} Approved Members`;
+            } catch (e) { console.error(e); }
+        }
+
+        // Load Clubs List
+        async function loadClubsList() {
+            const list = document.getElementById('clubs-list');
+            try {
+                const res = await fetch('/api/societies');
+                const clubs = await res.json();
+                
+                if (clubs.length === 0) {
+                    list.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:2rem; color:var(--text-secondary);">No societies active on campus.</td></tr>';
+                    return;
+                }
+
+                list.innerHTML = clubs.map(c => `
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 1rem;">
+                            <div style="font-weight:600;">${c.name}</div>
+                            <div style="font-size:0.85rem; color:var(--text-secondary);">${c.desc}</div>
+                        </td>
+                        <td style="padding: 1rem;">
+                            <span style="background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:4px; font-weight:600; text-transform:uppercase; font-size:0.8rem;">${c.type}</span>
+                        </td>
+                        <td style="padding: 1rem; text-align:center;">
+                            <button onclick="deleteClub('${c.name}')" style="background:#dc2626; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;" title="Dissolve Society"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        // Delete Club
+        window.deleteClub = async function(name) {
+            if(!confirm(`Are you sure you want to completely dissolve the ${name} society?`)) return;
+            try {
+                const res = await fetch(`/api/faculty/club/${encodeURIComponent(name)}`, {
+                    method: 'DELETE'
+                });
+                if(res.ok) {
+                    loadClubsList();
+                    loadHype();
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        // Handle Event Broadcast
+        document.getElementById('eventForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('eventDesc').value;
+            try {
+                const res = await fetch('/api/faculty/event', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: `[FACULTY] ${title}` })
+                });
+                if(res.ok) {
+                    document.getElementById('eventDesc').value = '';
+                    const msg = document.getElementById('eventMsg');
+                    msg.innerText = "Broadcast successfully pushed to live feed!";
+                    msg.style.display = 'block';
+                    setTimeout(() => msg.style.display = 'none', 3000);
+                }
+            } catch (err) { console.error(err); }
+        });
+
+        // Handle Club Creation
+        document.getElementById('clubForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('clubName').value.trim();
+            const type = document.getElementById('clubType').value;
+            const desc = document.getElementById('clubDesc').value.trim();
+            
+            try {
+                const res = await fetch('/api/faculty/club', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, type, desc })
+                });
+                if(res.ok) {
+                    document.getElementById('clubForm').reset();
+                    loadClubsList();
+                }
+            } catch (err) { console.error(err); }
+        });
+
+        loadHype();
+        loadClubsList();
+    </script>
+</body>
+</html>

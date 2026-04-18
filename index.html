@@ -1,226 +1,319 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Synapse | Merit & Skill Management</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;500;600&display=swap"
-        rel="stylesheet">
+    <title>Synapse | Society Merit & Skill Management</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
     <!-- Role Selection Modal -->
-    <div class="modal-overlay" id="role-modal"
-        style="display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; backdrop-filter: blur(8px); background: rgba(10, 14, 23, 0.9); align-items: center; justify-content: center;">
-        <div class="modal-content"
-            style="text-align: center; max-width: 400px; background: #1a1e29; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 2.5rem 2rem; width: 90%;">
-            <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem; color: white;">Welcome to <span
-                    class="gradient-text">Synapse</span></h2>
-            <p style="color: #94a3b8; margin-bottom: 2rem;">Select your role to continue</p>
-
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
-                <button onclick="selectRole('student')" class="btn btn-primary" style="padding: 1rem;">Student
-                    Portal</button>
-                <div id="student-login-box" style="display: none; margin-top: 1rem;">
-                    <input type="text" id="login-id" placeholder="Enter Student ID (e.g. S105)"
-                        style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; margin-bottom: 10px;">
-                    <button onclick="loginWithId()" class="btn btn-primary" style="width: 100%;">Login</button>
+    <div class="modal-overlay" id="role-modal" style="display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; backdrop-filter: blur(8px); background: rgba(10, 14, 23, 0.9); align-items: center; justify-content: center; transition: opacity 0.3s ease; opacity: 1 !important; pointer-events: auto !important;">
+        <div class="modal-content" style="text-align: center; max-width: 450px; background: #1a1e29; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 2.5rem 2rem; width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+            <div style="margin-bottom: 2rem;">
+                <div style="font-size: 3rem; color: #a855f7; margin-bottom: 1rem;">
+                    <i class="fa-solid fa-users-gear"></i>
                 </div>
-
-                <button onclick="selectRole('president')" class="btn btn-outline"
-                    style="padding: 1rem; border-color: rgba(255,255,255,0.2);">Club President Portal</button>
-                <div id="president-login-box" style="display: none; margin-top: 1rem;">
-                    <input type="password" id="president-pass" placeholder="Enter President Password"
-                        style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; margin-bottom: 10px;">
-                    <button onclick="loginAsPresident()" class="btn btn-primary"
-                        style="width: 100%; background: var(--gradient-btn);">Admin Login</button>
+                <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem; color: white;">Welcome to <span style="background: linear-gradient(135deg, #4285F4, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Synapse</span></h2>
+                <p style="color: #94a3b8;">Please select your role to continue</p>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <button onclick="selectRole('student')" style="width: 100%; padding: 1.2rem; font-size: 1.1rem; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; background: linear-gradient(135deg, #4285F4, #a855f7); color: white; font-weight: 600;">
+                    <i class="fa-solid fa-user-graduate"></i> Student Login
+                </button>
+                <button onclick="selectRole('president')" style="width: 100%; padding: 1.2rem; font-size: 1.1rem; border: 1px solid #a855f7; border-radius: 8px; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; color: white; font-weight: 600;">
+                    <i class="fa-solid fa-crown" style="color: #a855f7;"></i> Club President Login
+                </button>
+                <button onclick="selectRole('faculty')" style="width: 100%; padding: 1.2rem; font-size: 1.1rem; border: 1px solid #00e676; border-radius: 8px; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; color: white; font-weight: 600;">
+                    <i class="fa-solid fa-chalkboard-user" style="color: #00e676;"></i> Faculty Login
+                </button>
+            </div>
+            
+            <div id="student-login-box" style="margin-top: 1.5rem; display: none;">
+                <hr style="opacity: 0.1; margin-bottom: 1.5rem;">
+                <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 1rem;">Already have an account? Enter your ID:</p>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="login-id" placeholder="e.g., S105" style="flex: 1; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;">
+                    <button onclick="loginWithId()" class="btn btn-primary" style="padding: 0.8rem 1.5rem;">Login</button>
                 </div>
             </div>
-            <p id="login-error" style="color: #ff4d4d; font-size: 0.8rem; margin-top: 10px; display: none;"></p>
+
+            <div id="president-login-box" style="margin-top: 1.5rem; display: none;">
+                <hr style="opacity: 0.1; margin-bottom: 1.5rem;">
+                <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 1rem;">Select your club to continue:</p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <select id="login-club-main" style="padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: #1a1e29; color: white;">
+                        <option value="Coding">Coding Society</option>
+                        <option value="Design">Design Society</option>
+                        <option value="Robotics">Robotics Society</option>
+                    </select>
+                    <button onclick="loginPresidentMain()" class="btn btn-primary" style="padding: 1rem; width: 100%; border-radius: 8px;">Unlock Dashboard</button>
+                </div>
+            </div>
+            <p id="login-error" style="color: #ff4d4d; font-size: 0.8rem; margin-top: 5px; display: none;"></p>
         </div>
     </div>
 
     <!-- Navigation -->
-    <nav class="navbar">
+    <nav class="navbar" id="navbar">
         <div class="nav-container">
-            <a href="#" class="logo"><i class="fa-solid fa-network-wired"></i> Synapse</a>
+            <a href="#" class="logo">
+                <i class="fa-solid fa-network-wired"></i> Synapse
+            </a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#societies">Societies</a></li>
+                <li><a href="#apply">Apply</a></li>
+                <li><a href="#leaderboard">Leaderboard</a></li>
+            </ul>
             <div class="nav-auth">
-                <div id="user-display" style="display: none; align-items: center; gap: 10px;">
-                    <i class="fa-solid fa-circle-user"></i> <span id="user-name">User</span>
-                    <button onclick="logout()" class="btn-outline"
-                        style="font-size: 0.7rem; padding: 2px 8px;">Logout</button>
+                <div id="user-display" style="display: none; align-items: center; gap: 10px; margin-right: 1.5rem; color: #00e676; font-weight: 600;">
+                    <i class="fa-solid fa-circle-user"></i> <span id="user-name">Welcome!</span>
+                    <button onclick="logout()" style="background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 0.8rem; text-decoration: underline;">Logout</button>
                 </div>
+                <a href="admin.html" id="nav-admin-btn" class="btn btn-outline" style="border: 1px solid #7A28CB; color: white; display: none;">Admin Portal</a>
+                <a href="#societies" id="nav-join-btn" class="btn btn-primary" style="display: none;">Join Society</a>
+                <button id="nav-login-btn-init" onclick="selectRole('')" class="btn btn-primary">Portal Access</button>
+            </div>
+            
+            <!-- Mobile Menu Toggle -->
+            <div class="menu-toggle" id="mobile-menu">
+                <i class="fa-solid fa-bars"></i>
             </div>
         </div>
     </nav>
 
-    <!-- Hero -->
+    <!-- Hero Section -->
     <section class="hero" id="home">
+        <div class="hero-bg-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+        </div>
         <div class="hero-content">
-            <div id="user-display-status" style="display: none; margin-bottom: 2rem;">
-                <div class="card"
-                    style="display: inline-block; padding: 1rem 2rem; border-radius: 50px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
-                    <h3 id="display-name" style="margin: 0;">Student Profile</h3>
-                    <p style="margin: 0; color: var(--text-secondary); font-size: 0.8rem;">Student ID: #<span
-                            id="display-id">None</span></p>
+            <!-- User Status Pill -->
+            <div id="user-display-status" style="margin-bottom: 1.5rem; display: none;">
+                <div style="display: inline-flex; align-items: center; gap: 1rem; padding: 0.5rem 1.5rem; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 50px; border: 1px solid rgba(255,255,255,0.1);">
+                    <img id="display-avatar" src="https://ui-avatars.com/api/?name=User&background=random" style="width: 32px; height: 32px; border-radius: 50%;">
+                    <div style="text-align: left;">
+                        <span id="display-name" style="font-weight: 600; font-family: 'Outfit'; color: white;">Guest User</span>
+                        <span id="display-status" style="margin-left: 10px; font-size: 0.75rem; color: #00e676; text-transform: uppercase; letter-spacing: 1px;">(PENDING)</span>
+                        <div style="font-size: 0.7rem; color: #94a3b8;">Student ID: #<span id="display-id">None</span></div>
+                    </div>
                 </div>
             </div>
-            <h1>Empowering Students via <span class="gradient-text">DSA.</span></h1>
-            <p>A comprehensive Micro Project demonstrating Hash Tables, Trees, Heaps, Stacks, and Graphs integrated into
-                a modern web recruitment portal.</p>
+
+            <h1>Connect. Contribute. <span class="gradient-text">Level Up.</span></h1>
+            <p>The ultimate platform for college societies. Showcase your skills, earn merit points through active participation, and build a verifiable portfolio before you even graduate.</p>
+            <div class="hero-buttons">
+                <a href="#societies" class="btn btn-primary btn-lg">Explore Societies</a>
+                <a href="#leaderboard" class="btn btn-secondary btn-lg">View Leaderboard</a>
+            </div>
+            
+            <div class="hero-stats">
+                <div class="stat">
+                    <h3 id="stat-societies">--</h3>
+                    <p>Active Societies</p>
+                </div>
+                <div class="stat">
+                    <h3 id="stat-points">--</h3>
+                    <p>Merit Points Earned</p>
+                </div>
+                <div class="stat">
+                    <h3 id="stat-skills">--</h3>
+                    <p>Verified Skills</p>
+                </div>
+            </div>
+
         </div>
     </section>
 
-    <!-- Apply Section -->
-    <section class="apply" id="apply" style="display: none; padding: 4rem 2rem;">
-        <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
-            <h1 style="font-size: 3rem; margin-bottom: 0.5rem;">Apply to a <span class="gradient-text" style="color: #a855f7;">Club</span></h1>
-            <p style="color: #94a3b8;">Submit your merit details. First-year applications bypass CGPA criteria.</p>
+    <!-- Real-Time Feed Section -->
+    <section class="feed-section" id="feed" style="padding: 4rem 2rem; max-width: 800px; margin: 0 auto;">
+        <div class="section-header">
+            <h2>Live Recruitment <span class="gradient-text">Feed</span></h2>
+            <p>Powered by C++ Stacks. Real-time updates from societies.</p>
         </div>
         
-        <div class="form-container" style="max-width: 600px; margin: 0 auto; background: #161a23; padding: 2.5rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
-            <form id="applyForm">
-                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                    <!-- Row 1 -->
-                    <div>
-                        <label style="display: block; margin-bottom: 0.5rem; color: #94a3b8;">Full Name</label>
-                        <input type="text" id="apply-name" placeholder="Enter your full name" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;" required>
-                    </div>
-
-                    <!-- Row 2 -->
-                    <div>
-                        <label style="display: block; margin-bottom: 0.5rem; color: #94a3b8;">Email Address</label>
-                        <input type="email" id="apply-email" placeholder="example@mitsgwl.ac.in" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;" required>
-                    </div>
-
-                    <!-- Row 3 -->
-                    <div>
-                        <label style="display: block; margin-bottom: 0.5rem; color: #94a3b8;">Primary Skill (e.g. C++, Design)</label>
-                        <input type="text" id="apply-skill" placeholder="Your core technical skill" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;" required>
-                    </div>
-
-                    <!-- Row 4 -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <div>
-                            <label style="display: block; margin-bottom: 0.5rem; color: #94a3b8;">Year of Study</label>
-                            <select id="apply-year" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: #1a1e29; color: white;">
-                                <option value="1">1st Year</option>
-                                <option value="2">2nd Year</option>
-                                <option value="3">3rd Year</option>
-                                <option value="4">4th Year</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 0.5rem; color: #94a3b8;">Semester</label>
-                            <select id="apply-sem" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: #1a1e29; color: white;">
-                                <option value="1">Sem 1</option>
-                                <option value="2">Sem 2</option>
-                                <option value="3">Sem 3</option>
-                                <option value="4">Sem 4</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Row 5 -->
-                    <div>
-                        <label style="display: block; margin-bottom: 0.5rem; color: #94a3b8;">SGPA / CGPA (Previous Sem)</label>
-                        <input type="number" step="0.01" id="apply-sgpa" placeholder="7.5" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;" required>
-                    </div>
-
-                    <!-- Row 6 -->
-                    <div>
-                        <label style="display: block; margin-bottom: 0.5rem; color: #94a3b8;">Past Experience (Months)</label>
-                        <input type="number" id="apply-exp" placeholder="0" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;" required>
-                    </div>
-
-                    <!-- Row 7 -->
-                    <div>
-                        <label style="display: block; margin-bottom: 0.5rem; color: #94a3b8;">Target Club</label>
-                        <select id="apply-club" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: #1a1e29; color: white;">
-                            <option value="Coding">Coding Club</option>
-                            <option value="Design">Design Society</option>
-                            <option value="Robotics">Robotics Society</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" id="applySubmitBtn" class="btn btn-primary" style="width: 100%; padding: 1rem; background: var(--gradient-btn); font-weight: 600;">Submit Merit Application</button>
-                </div>
-            </form>
-            <p id="responseMsg" style="margin-top: 1rem; text-align: center; color: var(--accent-cyan);"></p>
+        <div id="live-events-container" style="background: rgba(25, 25, 35, 0.7); border-radius: 12px; padding: 2rem; border: 1px solid rgba(255,255,255,0.1); max-height: 400px; overflow-y: auto;">
+            <div style="text-align:center; color: #A0AEC0;"><i class="fa-solid fa-spinner fa-spin"></i> Waiting for live events from C++ Backend...</div>
         </div>
     </section>
 
-    <!-- Leaderboard -->
+    <!-- Societies Section -->
+    <section class="societies" id="societies">
+        <div class="section-header">
+            <h2>Campus <span class="gradient-text">Societies</span></h2>
+            <p>Join a community, participate in events, and earn verifiable merit points.</p>
+        </div>
+        
+        <div id="society-grid" class="society-grid">
+            <!-- Dynamic Data from Script -->
+        </div>
+    </section>
+
+    <!-- Apply Form Section -->
+    <section class="apply" id="apply" style="padding: 6rem 2rem; display: none;">
+        <div class="section-header">
+            <h2>Apply to a <span class="gradient-text">Club</span></h2>
+            <p>Submit your merit details. First-year applications bypass CGPA criteria.</p>
+        </div>
+        <div class="form-container" style="max-width: 600px; margin: 0 auto; background: rgba(25, 25, 35, 0.7); padding: 3rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
+            <form id="applyForm">
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display:block; margin-bottom: 0.5rem; color: #A0AEC0; font-weight: 500;">Your Student ID</label>
+                    <input type="text" id="apply-id" readonly style="width: 100%; padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4); color: #A0AEC0; cursor: not-allowed;">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display:block; margin-bottom: 0.5rem; color: #A0AEC0; font-weight: 500;">Full Name</label>
+                    <input type="text" id="name" required style="width: 100%; padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display:block; margin-bottom: 0.5rem; color: #A0AEC0; font-weight: 500;">Email Address</label>
+                    <input type="email" id="email" required placeholder="name@college.edu" style="width: 100%; padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display:block; margin-bottom: 0.5rem; color: #A0AEC0; font-weight: 500;">Core Skill (e.g. C++, Java, UI/UX)</label>
+                    <input type="text" id="skill" required style="width: 100%; padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;">
+                </div>
+                <div style="display: flex; gap: 15px; margin-bottom: 1.5rem;">
+                    <div style="flex: 1;">
+                        <label style="display:block; margin-bottom: 0.5rem; color: #A0AEC0; font-weight: 500;">Year</label>
+                        <select id="year" onchange="toggleCgpa()" style="width: 100%; padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: #12121A; color: white;">
+                            <option value="1">1st Year</option>
+                            <option value="2">2nd Year</option>
+                            <option value="3">3rd Year</option>
+                            <option value="4">4th Year</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="display:block; margin-bottom: 0.5rem; color: #A0AEC0; font-weight: 500;">Semester</label>
+                        <input type="number" id="semester" value="1" min="1" max="8" style="width: 100%; padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;">
+                    </div>
+                </div>
+                <div style="margin-bottom: 1.5rem; display: none;" id="cgpa-group">
+                    <label style="display:block; margin-bottom: 0.5rem; color: #A0AEC0; font-weight: 500;">SGPA (Last Sem)</label>
+                    <input type="number" id="cgpa" step="0.01" min="0" max="10" placeholder="e.g. 9.5" style="width: 100%; padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display:block; margin-bottom: 0.5rem; color: #A0AEC0; font-weight: 500;">Past Experience (Months)</label>
+                    <input type="number" id="experience" value="0" min="0" style="width: 100%; padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;">
+                </div>
+                <div style="margin-bottom: 2rem;">
+                    <label style="display:block; margin-bottom: 0.5rem; color: #A0AEC0; font-weight: 500;">Target Society</label>
+                    <select id="club" style="width: 100%; padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: #12121A; color: white;">
+                        <option value="Coding">Coding Society</option>
+                        <option value="Robotics">Robotics Society</option>
+                        <option value="Debate">Debate Society</option>
+                        <option value="Design">Design Society</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 2rem;">
+                    <label style="display:block; margin-bottom: 0.5rem; color: #A0AEC0; font-weight: 500;">Domain Category</label>
+                    <select id="domain" style="width: 100%; padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: #12121A; color: white;">
+                        <option value="Tech">Tech</option>
+                        <option value="Management">Management</option>
+                        <option value="Marketing & Social Media">Marketing & Social Media</option>
+                        <option value="Graphics Designer">Graphics Designer</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                    <label style="display:block; margin-bottom: 0.5rem; color: #A0AEC0; font-weight: 500;">Message to President (Optional)</label>
+                    <textarea id="apply-message" placeholder="Introduce yourself or ask a question..." style="width: 100%; padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; min-height: 80px; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1.2rem; font-size: 1.1rem; border-radius: 12px; font-weight: 700;">Submit Membership Application</button>
+            </form>
+            <p id="responseMsg" style="margin-top: 1.5rem; text-align: center; font-weight: 600;"></p>
+        </div>
+    </section>
+
+    <!-- Leaderboard / Skills Section -->
     <section class="leaderboard" id="leaderboard">
         <div class="section-header">
-            <h2>Live <span class="gradient-text">Leaderboard</span></h2>
-            <p>Data synced from C++ Max Heap structure.</p>
+            <h2>Skill <span class="gradient-text">Leaderboard</span></h2>
+            <p>Top students ranked by merit points and verified society contributions (Heap Sort).</p>
         </div>
-        <div class="leaderboard-grid" id="student-grid" style="max-width: 600px; margin: 0 auto;">
-            <div style="text-align:center; color: var(--text-secondary); padding: 2rem; width: 100%;">
-                <i class="fa-solid fa-spinner fa-spin"></i> Loading...
+
+        <!-- Filter Buttons -->
+        <div class="filter-container">
+            <button class="filter-btn active" data-filter="all">All Skills</button>
+            <button class="filter-btn" data-filter="coding">Coding</button>
+            <button class="filter-btn" data-filter="design">UI/UX</button>
+            <button class="filter-btn" data-filter="robotics">Robotics</button>
+        </div>
+
+        <div id="student-grid" class="leaderboard-grid">
+            <!-- Loading placeholder -->
+            <div style="text-align:center; color: #A0AEC0; padding: 2rem;">
+                <i class="fa-solid fa-spinner fa-spin"></i> Fetching merit profiles from C++ Heap...
             </div>
         </div>
     </section>
 
-    <script src="script.js"></script>
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <a href="#" class="logo">
+                    <i class="fa-solid fa-network-wired"></i> Synapse
+                </a>
+                <p>Establishing the future of campus student networking via advanced data structures and professional merit tracking.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="#societies">Societies</a></li>
+                    <li><a href="#leaderboard">Leaderboard</a></li>
+                    <li><a href="#apply">Apply</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Social</h4>
+                <div class="social-links" style="display: flex; gap: 15px; font-size: 1.5rem; margin-top: 1rem;">
+                    <a href="#"><i class="fa-brands fa-github"></i></a>
+                    <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Synapse Portal | Core DSA Implementation</p>
+        </div>
+    </footer>
+
+    <!-- Merit Auto-Approval Popup -->
+    <div class="merit-popup-overlay" id="merit-popup">
+        <div class="merit-popup-card">
+            <div class="merit-icon-wrapper">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            <h2>Elite Selection!</h2>
+            <p>Your record of <strong id="popup-cgpa">9.0+</strong> has qualified you for <span style="color:white; font-weight:700;">Instant Admission</span>.</p>
+            <div class="merit-popup-badge">
+                <i class="fa-solid fa-check-double"></i> CLUB AUTO-APPROVED
+            </div>
+            <button class="merit-popup-btn" onclick="document.getElementById('merit-popup').classList.remove('active'); window.scrollTo({top:0, behavior:'smooth'});">View My Status</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script>
-        // Additional UI logic
-        // Advanced Application Logic
-        document.getElementById('applyForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('applySubmitBtn');
-            const msg = document.getElementById('responseMsg');
-            const user = JSON.parse(localStorage.getItem('synapse_user') || '{}');
-            
-            if (!user.id) {
-                msg.innerText = "❌ Please login first!";
-                return;
-            }
-
-            const originalBtnText = btn.innerText;
-            btn.innerText = "⏳ Processing...";
-            btn.disabled = true;
-
-            const data = {
-                id: user.id,
-                name: document.getElementById('apply-name').value,
-                email: document.getElementById('apply-email').value,
-                skill: document.getElementById('apply-skill').value,
-                year: document.getElementById('apply-year').value,
-                sem: document.getElementById('apply-sem').value,
-                sgpa: document.getElementById('apply-sgpa').value,
-                exp: document.getElementById('apply-exp').value,
-                club: document.getElementById('apply-club').value
-            };
-
-            try {
-                const res = await fetch('/api/apply', {
-                    method: 'POST',
-                    body: JSON.stringify(data),
-                    headers: { 'Content-Type': 'application/json' }
-                });
-
-                if (res.ok) {
-                    msg.innerHTML = "<span style='color: #00e676;'>✅ Application Success! Wait for review.</span>";
-                    e.target.reset();
-                    if (window.loadLeaderboard) window.loadLeaderboard();
-                } else {
-                    msg.innerText = "❌ Submission failed. ID might not be registered.";
-                }
-            } catch (err) {
-                msg.innerText = "❌ Connection error. Is the server running?";
-            } finally {
-                btn.innerText = originalBtnText;
-                btn.disabled = false;
-            }
-        });
+        function toggleCgpa() {
+            const year = parseInt(document.getElementById('year').value);
+            const group = document.getElementById('cgpa-group');
+            group.style.display = (year > 1) ? 'block' : 'none';
+        }
     </script>
+    <script src="script.js"></script>
 </body>
-
 </html>
